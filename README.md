@@ -41,7 +41,7 @@ explain**.
 | [**EconoScope**](https://github.com/BerkeArdaTurk21/EconoScope) | Analyzes 50 years of World Bank inflation data across 212 countries | EDA & Visualization |
 | [**MovieDB**](https://github.com/BerkeArdaTurk21/MovieDB) | Relational movie database with SQL joins, aggregations & analysis | SQL |
 | [**Stock-Sentiment-Predictor**](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Classifies market sentiment from financial news | NLP (TF-IDF + SVM) |
-| [**Python-RoadMap**](https://github.com/BerkeArdaTurk21/Python-RoadMap) ⭐ | An 8-week Python curriculum with 4 stdlib-only projects | Teaching / Fundamentals |
+| [**Python-RoadMap**](https://github.com/BerkeArdaTurk21/Python-RoadMap) ⭐ | A 12-week Python curriculum — 8 weeks of fundamentals + 4 stdlib-only projects | Teaching / Fundamentals |
 
 ---
 
