@@ -5,6 +5,7 @@
 <a href="https://berkeardaturk.com"><img src="https://img.shields.io/badge/Portfolio-0a1640?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI%2BPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBhMTY0MCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzA2MGIxNCIvPjwvbGluZWFyR3JhZGllbnQ%2BPGxpbmVhckdyYWRpZW50IGlkPSJzdHJva2UiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNjBhNWZhIi8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjM2I4MmY2Ii8%2BPC9saW5lYXJHcmFkaWVudD48L2RlZnM%2BPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0idXJsKCNiZykiIHN0cm9rZT0iIzNiODJmNiIgc3Ryb2tlLXdpZHRoPSIyIi8%2BPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3N0cm9rZSkiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIzNCwzNCAxOCw1MCAzNCw2NiIvPjxwb2x5bGluZSBwb2ludHM9IjY2LDM0IDgyLDUwIDY2LDY2Ii8%2BPGxpbmUgeDE9IjU4IiB5MT0iMjgiIHgyPSI0MiIgeTI9IjcyIi8%2BPC9nPjwvc3ZnPgo%3D"/></a>
   <a href="https://www.linkedin.com/in/berke-arda-turk/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/></a>
   <a href="https://medium.com/@berkeardaturk"><img src="https://img.shields.io/badge/Medium-000000?style=for-the-badge&logo=medium&logoColor=white"/></a>
+</p>
 
 ---
 
@@ -40,7 +41,7 @@ explain**.
 | [**EconoScope**](https://github.com/BerkeArdaTurk21/EconoScope) | Analyzes 50 years of World Bank inflation data across 212 countries | EDA & Visualization |
 | [**MovieDB**](https://github.com/BerkeArdaTurk21/MovieDB) | Relational movie database with SQL joins, aggregations & analysis | SQL |
 | [**Stock-Sentiment-Predictor**](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Classifies market sentiment from financial news | NLP (TF-IDF + SVM) |
-| [**Python-RoadMap**](https://github.com/BerkeArdaTurk21/Python-RoadMap) ⭐ | A 12-week Python learning curriculum | Teaching / Fundamentals |
+| [**Python-RoadMap**](https://github.com/BerkeArdaTurk21/Python-RoadMap) ⭐ | An 8-week Python curriculum with 4 stdlib-only projects | Teaching / Fundamentals |
 
 ---
 
@@ -67,7 +68,6 @@ applications and global economic data analysis.
 
 <div align="center">
 
-📬 If you want to ask something, work together, or just say hello → [turkberkearda@gmail.com](turkberkearda@gmail.com)
+📬 If you want to ask something, work together, or just say hello → [turkberkearda@gmail.com](mailto:turkberkearda@gmail.com)
 
 </div>
-
