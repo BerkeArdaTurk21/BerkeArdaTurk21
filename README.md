@@ -37,8 +37,8 @@ I'm a Computer Science student building a strong foundation in **data science an
 | Project | What it does | Key Result |
 |---------|-------------|------------|
 | [**ChurnGuard**](https://github.com/BerkeArdaTurk21/ChurnGuard) | Telecom churn prediction across 7,043 customers — Logistic Regression, Random Forest & Gradient Boosting | **80.55% accuracy** · Gradient Boosting |
-| [**HousePricer**](https://github.com/BerkeArdaTurk21/HousePricer) | House price prediction on 73 features — Linear, Ridge & Random Forest regression | **R² 0.87** · Ridge Regression |
-| [**Stock-Sentiment-Predictor**](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Financial news sentiment classifier with Streamlit deployment | **74.5% accuracy** · TF-IDF + SVM |
+| [**HousePricer**](https://github.com/BerkeArdaTurk21/HousePricer) | House price prediction on the Ames Housing dataset — Linear, Ridge & Random Forest regression | **R² 0.87** · Ridge Regression |
+| [**Stock-Sentiment-Predictor**](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Financial news sentiment classifier (positive / neutral / negative) with Streamlit deployment | **74.5% accuracy** · TF-IDF + Linear SVM |
 | [**EconoScope**](https://github.com/BerkeArdaTurk21/EconoScope) | 50 years of inflation data across 212 countries — 5 inflation types, decade heatmaps | EDA & Visualization |
 | [**MovieDB**](https://github.com/BerkeArdaTurk21/MovieDB) | Relational movie database with SQL joins, aggregations & Python analysis | SQL · MySQL |
 | [**Python-RoadMap**](https://github.com/BerkeArdaTurk21/Python-RoadMap) ⭐ | 12-week Python curriculum — 8 weeks of fundamentals + 4 stdlib-only projects | Teaching / Fundamentals |
