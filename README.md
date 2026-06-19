@@ -1,92 +1,109 @@
-<h1 align="center">Hi, I'm Berke Arda Türk 👋</h1>
-<h3 align="center">Computer Science Student · Aspiring Data Scientist</h3>
+<h1 align="center">Berke Arda Türk</h1>
+<h3 align="center">Computer Science · AI & Data Science</h3>
+<p align="center">Vizja University, Warsaw &nbsp;·&nbsp; GPA&nbsp;4.57 / 5.0 &nbsp;·&nbsp; Mar 2024 – Feb 2028</p>
 
 <p align="center">
-  <a href="https://berkeardaturk.com"><img src="https://img.shields.io/badge/Portfolio-0a1640?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI%2BPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzBhMTY0MCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzA2MGIxNCIvPjwvbGluZWFyR3JhZGllbnQ%2BPGxpbmVhckdyYWRpZW50IGlkPSJzdHJva2UiIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNjBhNWZhIi8%2BPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjM2I4MmY2Ii8%2BPC9saW5lYXJHcmFkaWVudD48L2RlZnM%2BPHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMiIgZmlsbD0idXJsKCNiZykiIHN0cm9rZT0iIzNiODJmNiIgc3Ryb2tlLXdpZHRoPSIyIi8%2BPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI3N0cm9rZSkiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSIzNCwzNCAxOCw1MCAzNCw2NiIvPjxwb2x5bGluZSBwb2ludHM9IjY2LDM0IDgyLDUwIDY2LDY2Ii8%2BPGxpbmUgeDE9IjU4IiB5MT0iMjgiIHgyPSI0MiIgeTI9IjcyIi8%2BPC9nPjwvc3ZnPgo%3D"/></a>
-  <a href="https://www.linkedin.com/in/berke-arda-turk/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/></a>
-  <a href="https://medium.com/@berkeardaturk"><img src="https://img.shields.io/badge/Medium-000000?style=for-the-badge&logo=medium&logoColor=white"/></a>
+  <a href="https://berkeardaturk.com"><img src="https://img.shields.io/badge/Portfolio-000?style=for-the-badge&logo=googlechrome&logoColor=white"/></a>&nbsp;
+  <a href="https://www.linkedin.com/in/berke-arda-turk/"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/></a>&nbsp;
+  <a href="https://medium.com/@berkeardaturk"><img src="https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white"/></a>&nbsp;
   <a href="mailto:turkberkearda@gmail.com"><img src="https://img.shields.io/badge/Email-EA4335?style=for-the-badge&logo=gmail&logoColor=white"/></a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Open%20to-Data%20Science%20Internships-2ecc71?style=flat-square"/>
-  <img src="https://img.shields.io/badge/Based%20in-Warsaw%20%2F%20Istanbul%20%2F%20Remote-6366f1?style=flat-square"/>
+  <img src="https://img.shields.io/badge/Open%20to-Data%20Science%20Internships-2ecc71?style=flat-square&labelColor=0d1117"/>
+  &nbsp;
+  <img src="https://img.shields.io/badge/Location-Warsaw%20·%20Istanbul%20·%20Remote-6366f1?style=flat-square&labelColor=0d1117"/>
 </p>
 
 ---
 
-### 🎯 About Me
+### About
 
-I'm a Computer Science student (AI & Data Science) building a strong foundation in **data science and machine learning**. I work projects end-to-end — from cleaning messy datasets to training, evaluating and interpreting models — with a focus on **EDA, statistics and results I can actually explain**.
+I'm a Computer Science student specializing in AI & Data Science, building end-to-end machine learning pipelines — from messy datasets to results I can actually explain. My focus isn't just training models, but the full workflow: raw data in, business insights out.
 
-- 🔭 Currently seeking a **Data Science internship**
-- 🌱 Strengthening my ML, SQL and end-to-end project skills, one daily commit at a time
-- 💬 Ask me about **classification, regression, NLP or turning data into decisions**
-- 📫 Reach me at **turkberkearda@gmail.com**
+I work across classification, regression and NLP, and I write about the methods behind my projects on Medium. Currently seeking a **Data Science internship** where I can contribute to real data problems and learn from experienced practitioners.
 
 ---
 
-### 🛠️ Tech Stack
+### Tech Stack
 
-**Languages**
+**Core**&emsp;
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
 ![SQL](https://img.shields.io/badge/SQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
-
-**Data & Machine Learning**
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white)
 ![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white)
 
-**Visualization & Notebooks**
+**NLP & Apps**&emsp;
+![NLTK](https://img.shields.io/badge/NLTK-154f5b?style=flat-square&logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)
+
+**Visualization**&emsp;
 ![Matplotlib](https://img.shields.io/badge/Matplotlib-11557C?style=flat-square&logo=python&logoColor=white)
 ![Seaborn](https://img.shields.io/badge/Seaborn-3776AB?style=flat-square&logo=python&logoColor=white)
-![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)
 
-**Databases & Deployment**
+**Data & Tools**&emsp;
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat-square&logo=sqlite&logoColor=white)
-![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=flat-square&logo=jupyter&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white)
 
 ---
 
-### 🚀 Featured Projects
+### Featured Projects
 
-| Project                                                                                       | What it does                                                                                             | Highlight                                |
-| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
-| [**ChurnGuard**](https://github.com/BerkeArdaTurk21/ChurnGuard)                               | Telecom churn prediction across 7,043 customers — Logistic Regression, Random Forest & Gradient Boosting | **80.55% accuracy** · Gradient Boosting  |
-| [**HousePricer**](https://github.com/BerkeArdaTurk21/HousePricer)                             | House price prediction on the Ames Housing dataset — Linear, Ridge & Random Forest regression            | **R² 0.87** · Ridge Regression           |
-| [**Stock-Sentiment-Predictor**](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Financial-news sentiment classifier (positive / neutral / negative) with a Streamlit app                 | **74.5% accuracy** · TF-IDF + Linear SVM |
-| [**EconoScope**](https://github.com/BerkeArdaTurk21/EconoScope)                               | 50 years of inflation across 212 countries (1970–2022) — 5 inflation types, decade heatmaps              | EDA & Visualization                      |
-| [**MovieDB**](https://github.com/BerkeArdaTurk21/MovieDB)                                     | Relational movie database with SQL joins, aggregations & Python-driven analysis                          | SQL · MySQL                              |
-| [**Python-RoadMap**](https://github.com/BerkeArdaTurk21/Python-RoadMap) ⭐                    | 12-week Python curriculum — 8 weeks of fundamentals + 4 stdlib-only projects                             | Teaching · Daily commits                 |
+**[📉 ChurnGuard](https://github.com/BerkeArdaTurk21/ChurnGuard)**
 
-**More:**
-[SpendWise](https://github.com/BerkeArdaTurk21/SpendWise) (Python + SQLite + EDA) ·
-[StockLens](https://github.com/BerkeArdaTurk21/StockLens) (yfinance time-series) ·
-[RetailInsight](https://github.com/BerkeArdaTurk21/RetailInsight) (500K+ row EDA)
+Telecom churn prediction on 7,043 customer records — comparing Logistic Regression, Random Forest and Gradient Boosting. Reached **80.55% accuracy** using 5-fold CV and class-imbalance handling.
+
+`classification` `scikit-learn` `pandas` `cross-validation`
+
+**[🏠 HousePricer](https://github.com/BerkeArdaTurk21/HousePricer)**
+
+Regression benchmark on the Ames Housing dataset (2,919 homes, 79 features). Extensive feature engineering with log-transforms, outlier removal and ordinal encoding. **R² 0.87** with Ridge Regression.
+
+`regression` `feature-engineering` `scikit-learn` `pandas`
+
+**[📈 Stock-Sentiment-Predictor](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor)**
+
+NLP model classifying financial news as positive / neutral / negative. **74.5% accuracy** with TF-IDF + SVM, deployed as a live app on Streamlit.
+
+`nlp` `tf-idf` `svm` `streamlit`
+
+**[🌍 EconoScope](https://github.com/BerkeArdaTurk21/EconoScope)**
+
+Global inflation analysis across 212 countries and 5 decades using IMF and World Bank data. Decade-level heatmaps, regional clusters and trend visualizations. Published as an article on Medium.
+
+`eda` `pandas` `seaborn` `matplotlib`
 
 ---
 
-### ✍️ I Write on Medium
+### Writing
 
-I break down the methods and findings behind my projects — machine learning applications, NLP pipelines and global economic data analysis.
+I write about data science methods and the reasoning behind them:
 
-👉 **[Read my articles on Medium](https://medium.com/@berkeardaturk)**
+- [I Tried to Predict Customer Churn with ML — Here's What Actually Worked](https://medium.com/@berkeardaturk/i-tried-to-predict-customer-churn-with-ml-heres-what-actually-worked-50a1c38e2185)
+- [I Analysed 50 Years of Global Inflation Data — Here's What I Found](https://medium.com/@berkeardaturk/i-analysed-50-years-of-global-inflation-data-heres-what-i-found-7a511fd15c73)
+
+[→ All my articles](https://medium.com/@berkeardaturk)
 
 ---
 
-### 📊 GitHub Stats
+### Currently
+
+- 🔬 Deepening my ML foundations — especially feature engineering and model interpretability
+- 🛠️ Working on end-to-end pipeline quality and reproducibility
+- 🤝 Open to Data Science internships and research collaborations
+
+---
+
+### GitHub Stats
 
 <div align="center">
 
-<img height="165" src="https://github-readme-stats-sigma-five.vercel.app/api?username=BerkeArdaTurk21&show_icons=true&hide_border=true&bg_color=00000000&title_color=58a6ff&icon_color=58a6ff&text_color=8b949e&include_all_commits=true&count_private=true" />
-<img height="165" src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=BerkeArdaTurk21&layout=compact&hide_border=true&bg_color=00000000&title_color=58a6ff&text_color=8b949e&langs_count=8" />
-
-<br/>
-
-<img height="165" src="https://streak-stats.demolab.com?user=BerkeArdaTurk21&hide_border=true&background=00000000&stroke=8b949e&ring=58a6ff&fire=58a6ff&currStreakLabel=58a6ff&sideLabels=8b949e&dates=636e7a&currStreakNum=c9d1d9&sideNums=c9d1d9" />
+<img height="160" src="https://github-readme-stats-sigma-five.vercel.app/api?username=BerkeArdaTurk21&show_icons=true&hide_border=true&bg_color=00000000&title_color=58a6ff&icon_color=58a6ff&text_color=8b949e&include_all_commits=true&count_private=true" />
+&nbsp;
+<img height="160" src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=BerkeArdaTurk21&layout=compact&hide_border=true&bg_color=00000000&title_color=58a6ff&text_color=8b949e&langs_count=6" />
 
 </div>
 
@@ -94,8 +111,6 @@ I break down the methods and findings behind my projects — machine learning ap
 
 <div align="center">
 
-📬 Open to internships, collaboration or just a hello → **[turkberkearda@gmail.com](mailto:turkberkearda@gmail.com)**
-
-<sub>Thanks for visiting — feel free to explore the pinned projects above ⭐</sub>
+📬 Got a question, want to collaborate, or just want to say hi → **[turkberkearda@gmail.com](mailto:turkberkearda@gmail.com)**
 
 </div>
