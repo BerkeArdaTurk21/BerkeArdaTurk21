@@ -1,6 +1,6 @@
 ### hi, i'm berke 👋
 
-ai & data science student focused on end-to-end ml — from raw data to something explainable. i work across classification, regression, and nlp, and i write about what i learn.
+AI & Data Science student focused on end-to-end ml — from raw data to something explainable. i work across classification, regression, and nlp, and i write about what i learn.
 
 [![portfolio](https://img.shields.io/badge/berkeardaturk.com-000?style=flat&logo=googlechrome&logoColor=fff)](https://berkeardaturk.com)
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=flat&logo=linkedin&logoColor=fff)](https://www.linkedin.com/in/berke-arda-turk/)
