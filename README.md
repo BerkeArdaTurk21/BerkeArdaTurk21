@@ -1,4 +1,4 @@
-### Hey, I'm Berke 👋
+### hi, i'm berke 👋
 
 ai & data science student focused on end-to-end ml — from raw data to something explainable. i work across classification, regression, and nlp, and i write about what i learn.
 
@@ -14,7 +14,8 @@ ai & data science student focused on end-to-end ml — from raw data to somethin
 **daily drivers** → Python · Pandas · NumPy · Scikit-learn · Matplotlib · Seaborn  
 **nlp & apps** → NLTK · Streamlit  
 **data layer** → MySQL · SQLite  
-**environment** → Jupyter · Git · VS Code
+**environment** → Jupyter · Git · VS Code  
+**currently learning** → PyTorch · TensorFlow · MLOps
 
 ---
 
