@@ -5,7 +5,6 @@ AI & Data Science student focused on end-to-end ml — from raw data to somethin
 [![portfolio](https://img.shields.io/badge/berkeardaturk.com-000?style=flat&logo=googlechrome&logoColor=fff)](https://berkeardaturk.com)
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=flat&logo=linkedin&logoColor=fff)](https://www.linkedin.com/in/berke-arda-turk/)
 [![medium](https://img.shields.io/badge/medium-12100E?style=flat&logo=medium&logoColor=fff)](https://medium.com/@berkeardaturk)
-[![email](https://img.shields.io/badge/email-EA4335?style=flat&logo=gmail&logoColor=fff)](mailto:turkberkearda@gmail.com)
 
 ---
 
