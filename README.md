@@ -1,40 +1,64 @@
-<div align="center">
-
 <a href="https://berkeardaturk.com">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/hero-dark.svg">
-    <img src="./assets/hero-light.svg" width="100%" alt="Berke Arda Türk. Computer Science, Artificial Intelligence and Data Science. Open to ML and data roles abroad. I build machine learning models on real datasets, test them against a baseline, and turn the useful ones into apps.">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/header-dark.svg">
+    <img alt="Berke Arda Türk: machine learning and data science" src="./assets/header-light.svg" width="100%">
   </picture>
 </a>
 
-<a href="https://berkeardaturk.com"><img src="https://img.shields.io/badge/berkeardaturk.com-0e1015?style=for-the-badge&logo=googlechrome&logoColor=7fe0ff" alt="Website"></a>
-<a href="https://www.linkedin.com/in/berke-arda-turk/"><img src="https://img.shields.io/badge/LinkedIn-0e1015?style=for-the-badge&logo=linkedin&logoColor=7fe0ff" alt="LinkedIn"></a>
-<a href="https://medium.com/@berkeardaturk"><img src="https://img.shields.io/badge/Medium-0e1015?style=for-the-badge&logo=medium&logoColor=7fe0ff" alt="Medium"></a>
-<a href="mailto:turkberkearda@gmail.com"><img src="https://img.shields.io/badge/Email-0e1015?style=for-the-badge&logo=gmail&logoColor=7fe0ff" alt="Email"></a>
+<p align="center">
+  <a href="https://berkeardaturk.com"><b>Website</b></a>&nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://www.linkedin.com/in/berke-arda-turk/"><b>LinkedIn</b></a>&nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://www.kaggle.com/berketurk"><b>Kaggle</b></a>&nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://medium.com/@berkeardaturk"><b>Medium</b></a>&nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="mailto:turkberkearda@gmail.com"><b>Email</b></a>
+</p>
 
-<br><br>
+## About
 
-<a href="https://github.com/BerkeArdaTurk21/ChurnGuard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/project-churnguard-dark.svg"><img src="./assets/project-churnguard-light.svg" width="64.5%" alt="ChurnGuard: ROC-AUC 0.84, PR-AUC 0.66. Telecom churn prediction with a leakage-safe pipeline."></picture></a>
-<a href="https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/project-churn-shap-dark.svg"><img src="./assets/project-churn-shap-light.svg" width="34.5%" alt="Churn SHAP Dashboard: ROC-AUC 0.84, recall 79%."></picture></a>
-<a href="https://github.com/BerkeArdaTurk21/EconoScope"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/project-econoscope-dark.svg"><img src="./assets/project-econoscope-light.svg" width="34.5%" alt="EconoScope: inflation in 212 countries, 1970-2022."></picture></a>
-<a href="https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/project-sentiment-dark.svg"><img src="./assets/project-sentiment-light.svg" width="64.5%" alt="Stock Sentiment: 74.5% accuracy against a 59.4% baseline."></picture></a>
+I'm a Computer Science undergraduate at Vizja University, specialising in AI and Data Science. I like taking a real dataset all the way to an honest answer: a simple baseline first, validation without leakage, and a clear note on what the model cannot do. The results that hold up become apps and write-ups.
 
-<br><br>
+- **Focused on** machine learning on tabular data, model explainability and big data with PySpark.
+- **Writing** about my data projects on [Medium](https://medium.com/@berkeardaturk).
+- **Open to** machine learning and data roles.
+
+## Featured work
+
+<p>
+  <a href="https://github.com/BerkeArdaTurk21/kaggle-titanic"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-kaggle-titanic-dark.svg"><img alt="Kaggle Titanic" src="./assets/card-kaggle-titanic-light.svg" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/ChurnGuard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-churnguard-dark.svg"><img alt="ChurnGuard" src="./assets/card-churnguard-light.svg" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-customer-churn-shap-dashboard-dark.svg"><img alt="Churn SHAP Dashboard" src="./assets/card-customer-churn-shap-dashboard-light.svg" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-stock-sentiment-predictor-dark.svg"><img alt="Stock Sentiment" src="./assets/card-stock-sentiment-predictor-light.svg" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/EconoScope"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-econoscope-dark.svg"><img alt="EconoScope" src="./assets/card-econoscope-light.svg" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/Python-RoadMap"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-python-roadmap-dark.svg"><img alt="Python RoadMap" src="./assets/card-python-roadmap-light.svg" width="49%"></picture></a>
+</p>
+
+<p align="right"><sub><a href="https://github.com/BerkeArdaTurk21?tab=repositories">All repositories →</a></sub></p>
+
+## Toolkit
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/tools-dark.svg">
-  <img src="./assets/tools-light.svg" width="100%" alt="Tools: Python, TypeScript, scikit-learn, pandas, NumPy, Matplotlib, Jupyter, MySQL, SQLite, Streamlit, React, Tailwind, Git. Currently learning PyTorch.">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/toolkit-dark.svg">
+  <img alt="Languages: Python, SQL, TypeScript, Java. Machine learning: scikit-learn, XGBoost, SHAP, PyTorch (learning). Data and analysis: pandas, NumPy, Matplotlib, Seaborn, Jupyter. Big data and databases: PySpark, MySQL, SQLite. Apps and engineering: Streamlit, React, Tailwind, Git." src="./assets/toolkit-light.svg" width="100%">
 </picture>
 
-<br><br>
+## GitHub activity
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api?username=BerkeArdaTurk21&show_icons=true&rank_icon=github&disable_animations=true&bg_color=14171d&border_color=2a2e35&title_color=ececed&icon_color=7fe0ff&text_color=9b9ea5&ring_color=7fe0ff&border_radius=16">
-  <img height="165" src="https://github-readme-stats.vercel.app/api?username=BerkeArdaTurk21&show_icons=true&rank_icon=github&disable_animations=true&bg_color=cad8e1&border_color=b3c3ce&title_color=0a141b&icon_color=085d77&text_color=3f5260&ring_color=085d77&border_radius=16" alt="GitHub stats">
-</picture>
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/top-langs/?username=BerkeArdaTurk21&layout=compact&langs_count=6&disable_animations=true&bg_color=14171d&border_color=2a2e35&title_color=ececed&text_color=9b9ea5&border_radius=16">
-  <img height="165" src="https://github-readme-stats.vercel.app/api/top-langs/?username=BerkeArdaTurk21&layout=compact&langs_count=6&disable_animations=true&bg_color=cad8e1&border_color=b3c3ce&title_color=0a141b&text_color=3f5260&border_radius=16" alt="Top languages">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/activity-dark.svg">
+  <img alt="Contribution calendar for the last year and language breakdown" src="./assets/activity-light.svg" width="100%">
 </picture>
 
-</div>
+<sub>Refreshed daily by a GitHub Action.</sub>
+
+## Latest writing
+
+<!-- WRITING:START -->
+- [I Tried to Predict Customer Churn With ML — Here’s What Actually Worked](https://medium.com/@berkeardaturk/i-tried-to-predict-customer-churn-with-ml-heres-what-actually-worked-50a1c38e2185) <sub>· May 23, 2026</sub>
+- [I Analysed 50 Years of Global Inflation Data — Here’s What I Found](https://medium.com/@berkeardaturk/i-analysed-50-years-of-global-inflation-data-heres-what-i-found-7a511fd15c73) <sub>· May 18, 2026</sub>
+<!-- WRITING:END -->
+
+---
+
+<p align="center">
+  <sub>Open to collaboration on data science and ML projects. Questions or ideas? <a href="mailto:turkberkearda@gmail.com">turkberkearda@gmail.com</a></sub>
+</p>
