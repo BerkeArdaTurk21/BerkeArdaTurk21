@@ -53,6 +53,7 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 ## Latest writing
 
 <!-- WRITING:START -->
+- [What My First Kaggle Project Taught Me About Data Leakage and Simple Models](https://medium.com/@berkeardaturk/what-my-first-kaggle-project-taught-me-about-data-leakage-and-simple-models-c7c2b174e6f2) <sub>· Oct 22, 2026</sub>
 - [I Tried to Predict Customer Churn With ML — Here’s What Actually Worked](https://medium.com/@berkeardaturk/i-tried-to-predict-customer-churn-with-ml-heres-what-actually-worked-50a1c38e2185) <sub>· May 23, 2026</sub>
 - [I Analysed 50 Years of Global Inflation Data — Here’s What I Found](https://medium.com/@berkeardaturk/i-analysed-50-years-of-global-inflation-data-heres-what-i-found-7a511fd15c73) <sub>· May 18, 2026</sub>
 <!-- WRITING:END -->
