@@ -24,8 +24,8 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 ## Featured work
 
 <p>
+  <a href="https://github.com/BerkeArdaTurk21/foldsafe"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-foldsafe-dark.svg"><img alt="foldsafe" src="./assets/card-foldsafe-light.svg" width="49%"></picture></a>
   <a href="https://github.com/BerkeArdaTurk21/kaggle-titanic"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-kaggle-titanic-dark.svg"><img alt="Kaggle Titanic" src="./assets/card-kaggle-titanic-light.svg" width="49%"></picture></a>
-  <a href="https://github.com/BerkeArdaTurk21/ChurnGuard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-churnguard-dark.svg"><img alt="ChurnGuard" src="./assets/card-churnguard-light.svg" width="49%"></picture></a>
   <a href="https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-customer-churn-shap-dashboard-dark.svg"><img alt="Churn SHAP Dashboard" src="./assets/card-customer-churn-shap-dashboard-light.svg" width="49%"></picture></a>
   <a href="https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-stock-sentiment-predictor-dark.svg"><img alt="Stock Sentiment" src="./assets/card-stock-sentiment-predictor-light.svg" width="49%"></picture></a>
   <a href="https://github.com/BerkeArdaTurk21/EconoScope"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-econoscope-dark.svg"><img alt="EconoScope" src="./assets/card-econoscope-light.svg" width="49%"></picture></a>

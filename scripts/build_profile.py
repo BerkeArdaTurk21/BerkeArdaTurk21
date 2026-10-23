@@ -39,14 +39,14 @@ THEMES = {
 SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
 MONO = "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace"
 
-# Featured projects, ordered by strength of evidence. Metrics come from each repo's README.
+# Featured projects, in the same order as the pinned repos. Metrics come from each repo's README.
 FEATURED = [
+    {"repo": "foldsafe", "title": "foldsafe",
+     "desc": "Static analyzer and agent skill that catch data leakage in ML code before cross-validation scores mislead you.",
+     "metric": "Pre-alpha · 8 rules planned", "tags": ["static analysis", "agent skill"]},
     {"repo": "kaggle-titanic", "title": "Kaggle Titanic",
      "desc": "End-to-end tabular ML: leak-free scikit-learn pipelines, nested cross-validation and a group survival feature.",
      "metric": "Kaggle 0.794 · CV 0.841", "tags": ["scikit-learn", "XGBoost"]},
-    {"repo": "ChurnGuard", "title": "ChurnGuard",
-     "desc": "Telecom churn prediction with a leakage-safe pipeline, stratified 5-fold CV and a cost-aware decision threshold.",
-     "metric": "ROC-AUC 0.84 · PR-AUC 0.66", "tags": ["scikit-learn", "pandas"]},
     {"repo": "customer-churn-shap-dashboard", "title": "Churn SHAP Dashboard",
      "desc": "XGBoost churn model with a SHAP explanation for every prediction, served as a Streamlit app.",
      "metric": "ROC-AUC 0.84 · recall 79%", "tags": ["XGBoost", "SHAP"]},
