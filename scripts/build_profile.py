@@ -1,11 +1,12 @@
 """Build the profile README assets.
 
-Writes light and dark SVGs for the header, project cards, toolkit and GitHub
-activity, and refreshes the "Latest writing" list in README.md from Medium.
+Writes light and dark SVGs for the header, project cards and toolkit, and
+refreshes the "Latest writing" list in README.md from Medium.
 Neutral colors follow GitHub's own UI so the cards sit naturally on the page;
 the accent is the ice blue from berkeardaturk.com.
 Standard library only. Needs a GitHub token in GH_TOKEN or GITHUB_TOKEN for
-the activity card (the GitHub Action passes its own token).
+the star counts and languages on the project cards (the GitHub Action passes
+its own token).
 
 Usage: python scripts/build_profile.py
 """
@@ -115,12 +116,6 @@ def chip(x, y, label, t, size=11):
             + text(x + width / 2, y + size + 4, label, size, t["ink"], MONO, anchor="middle")), width
 
 
-def mix(a, b, amount):
-    """Blend two hex colors; amount 0 gives a, 1 gives b."""
-    ca, cb = (tuple(int(c[i:i + 2], 16) for i in (1, 3, 5)) for c in (a, b))
-    return "#" + "".join(f"{round(x + (y - x) * amount):02x}" for x, y in zip(ca, cb))
-
-
 def write_pair(name, build):
     for theme, t in THEMES.items():
         (ASSETS / f"{name}-{theme}.svg").write_text(build(t), encoding="utf-8")
@@ -131,24 +126,12 @@ def write_pair(name, build):
 def github_data():
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
-        sys.exit("Set GH_TOKEN or GITHUB_TOKEN to build the activity card.")
+        sys.exit("Set GH_TOKEN or GITHUB_TOKEN to build the project cards.")
     query = """
     query($login: String!) {
       user(login: $login) {
-        followers { totalCount }
         repositories(ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, first: 100) {
-          totalCount
-          nodes {
-            name stargazerCount
-            primaryLanguage { name color }
-            languages(first: 10, orderBy: {field: SIZE, direction: DESC}) { edges { size node { name color } } }
-          }
-        }
-        contributionsCollection {
-          contributionCalendar {
-            totalContributions
-            weeks { contributionDays { date contributionCount } }
-          }
+          nodes { name stargazerCount primaryLanguage { name color } }
         }
       }
     }"""
@@ -269,71 +252,6 @@ def toolkit_svg(t):
     return "".join(parts)
 
 
-def activity_svg(user, t):
-    w, h = 1000, 336
-    repos = user["repositories"]["nodes"]
-    calendar = user["contributionsCollection"]["contributionCalendar"]
-    parts = [svg_open(w, h, "GitHub activity: contribution calendar for the last year and language breakdown."),
-             panel(w, h, t)]
-
-    # Contribution calendar, GitHub layout: one column per week, Sunday on top.
-    parts.append(text(32, 42, "Contribution activity", 13, t["ink"], SANS, 600))
-    levels = [t["empty"]] + [mix(t["empty"], t["signal"], a) for a in (0.3, 0.5, 0.75, 1)]
-    weeks = calendar["weeks"]
-    counts = [d["contributionCount"] for wk in weeks for d in wk["contributionDays"]]
-    top = max(counts) or 1
-    cell, gap, gx, gy = 13, 3, 80, 76
-    last_month = None
-    for c, week in enumerate(weeks):
-        for day in week["contributionDays"]:
-            date = dt.date.fromisoformat(day["date"])
-            row = (date.weekday() + 1) % 7
-            count = day["contributionCount"]
-            level = min(4, 1 + int(3 * count / top)) if count else 0
-            parts.append(f'<rect x="{gx + c * (cell + gap)}" y="{gy + row * (cell + gap)}" width="{cell}" '
-                         f'height="{cell}" rx="2" fill="{levels[level]}"/>')
-        first = dt.date.fromisoformat(week["contributionDays"][0]["date"])
-        if first.month != last_month and c < len(weeks) - 2:
-            parts.append(text(gx + c * (cell + gap), gy - 8, first.strftime("%b"), 10.5, t["muted"], MONO))
-            last_month = first.month
-    for row, name in ((1, "Mon"), (3, "Wed"), (5, "Fri")):
-        parts.append(text(32, gy + row * (cell + gap) + 10.5, name, 10.5, t["muted"], MONO))
-    legend_x = w - 32 - 5 * (cell + gap) - 70
-    parts.append(text(legend_x, 46, "Less", 10.5, t["muted"], MONO))
-    for k, fill in enumerate(levels):
-        parts.append(f'<rect x="{legend_x + 34 + k * (cell + gap)}" y="35" width="{cell}" height="{cell}" rx="2" fill="{fill}"/>')
-    parts.append(text(w - 32, 46, "More", 10.5, t["muted"], MONO, anchor="end"))
-
-    # Languages by code size across public repos. Notebooks stay in: they are most of this work.
-    sizes, colors = {}, {}
-    for repo in repos:
-        for edge in repo["languages"]["edges"]:
-            name = edge["node"]["name"]
-            sizes[name] = sizes.get(name, 0) + edge["size"]
-            colors[name] = edge["node"]["color"] or t["muted"]
-    total = sum(sizes.values()) or 1
-    ranked = sorted(sizes.items(), key=lambda kv: -kv[1])[:5]
-    parts.append(f'<line x1="32" y1="206" x2="{w - 32}" y2="206" stroke="{t["line"]}"/>')
-    parts.append(text(32, 234, "Languages", 13, t["ink"], SANS, 600))
-    parts.append(text(w - 32, 234, "by code size, notebook outputs included", 10.5, t["muted"], MONO, anchor="end"))
-    bar_w, x = w - 64, 32
-    parts.append(f'<clipPath id="bar"><rect x="32" y="248" width="{bar_w}" height="10" rx="5"/></clipPath>'
-                 f'<g clip-path="url(#bar)"><rect x="32" y="248" width="{bar_w}" height="10" fill="{t["empty"]}"/>')
-    for name, size in ranked:
-        width = bar_w * size / total
-        parts.append(f'<rect x="{x:.1f}" y="248" width="{width:.1f}" height="10" fill="{colors[name]}"/>')
-        x += width
-    parts.append("</g>")
-    x = 32
-    for name, size in ranked:
-        label = f"{name} {100 * size / total:.1f}%"
-        parts.append(f'<circle cx="{x + 5}" cy="287" r="5" fill="{colors[name]}"/>')
-        parts.append(text(x + 15, 291, label, 11.5, t["muted"]))
-        x += 15 + len(label) * 6.6 + 26
-    parts.append("</svg>")
-    return "".join(parts)
-
-
 def update_writing(posts):
     readme = ROOT / "README.md"
     content = readme.read_text(encoding="utf-8")
@@ -350,7 +268,6 @@ def main():
     for project in FEATURED:
         write_pair(f'card-{project["repo"].lower()}', lambda t, p=project: card_svg(p, repos.get(p["repo"], {}), t))
     write_pair("toolkit", toolkit_svg)
-    write_pair("activity", lambda t: activity_svg(user, t))
     posts = medium_posts()
     if posts:
         update_writing(posts)

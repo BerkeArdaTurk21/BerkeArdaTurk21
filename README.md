@@ -41,15 +41,6 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
   <img alt="Languages: Python, SQL, TypeScript, Java. Machine learning: scikit-learn, XGBoost, SHAP, PyTorch (learning). Data and analysis: pandas, NumPy, Matplotlib, Seaborn, Jupyter. Big data and databases: PySpark, MySQL, SQLite. Apps and engineering: Streamlit, React, Tailwind, Git." src="./assets/toolkit-light.svg" width="100%">
 </picture>
 
-## GitHub activity
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/activity-dark.svg">
-  <img alt="Contribution calendar for the last year and language breakdown" src="./assets/activity-light.svg" width="100%">
-</picture>
-
-<sub>Refreshed daily by a GitHub Action.</sub>
-
 ## Latest writing
 
 <!-- WRITING:START -->
