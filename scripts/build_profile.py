@@ -32,7 +32,7 @@ ART = ASSETS / "art"
 FONTS = ASSETS / "fonts"
 ICONS = json.loads((ASSETS / "icons.json").read_text(encoding="utf-8"))
 # GitHub caches README images; bump this (and the ?v= numbers in README.md) after a design change.
-CACHE_VERSION = 6
+CACHE_VERSION = 7
 W = 1280
 
 # Palette: night sky with ice blue and violet light, like the portrait.
@@ -263,6 +263,34 @@ def image(name, box, view, cls="", radius=12, clip_id=None, mask=None):
             f'preserveAspectRatio="xMidYMid slice"><image href="{href}" width="{sw}" height="{sh}"{img_cls}/></svg></g>')
 
 
+# Video for the hero frame: JPEG frames cut from the character clip, already sized to the frame box.
+# The clip does not loop on its own, so it plays forward and then backward (ping-pong).
+FRAMES = sorted((ART / "frames").glob("frame-*.jpg"))
+FRAME_SECONDS = 1 / 6
+
+
+def video_cycle():
+    return max(2 * len(FRAMES) - 2, 1) * FRAME_SECONDS if FRAMES else 16
+
+
+def video_frames(box):
+    x, y, w, h = box
+    n = len(FRAMES)
+    slots = max(2 * n - 2, 1)
+    key_times = ";".join(f"{k / slots:.4f}" for k in range(slots))
+    parts = [f'<clipPath id="vid"><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="10"/></clipPath>'
+             '<g clip-path="url(#vid)">']
+    for i, path in enumerate(FRAMES):
+        shown = {i, slots - i}
+        values = ";".join("1" if k in shown else "0" for k in range(slots))
+        parts.append(f'<image href="data:image/jpeg;base64,{b64(path)}" x="{x}" y="{y}" width="{w}" height="{h}" '
+                     f'preserveAspectRatio="xMidYMid slice" opacity="{1 if i == 0 else 0}">'
+                     f'<animate attributeName="opacity" values="{values}" keyTimes="{key_times}" calcMode="discrete" '
+                     f'dur="{video_cycle():.2f}s" repeatCount="indefinite"/></image>')
+    parts.append("</g>")
+    return "".join(parts)
+
+
 def icon(key, x, y, size, color):
     """Simple Icons logo (24 x 24) or a rune when the key starts with 'rune:'."""
     if key.startswith("rune:"):
@@ -376,7 +404,8 @@ def hero_svg(d):
     # Video frame with the portrait.
     fx, fy, fw, fh = 704, 40, 524, 480
     p.append(f'<g class="fi" style="animation-delay:.4s">'
-             + image("portrait.jpg", (fx, fy, fw, fh), (90, 40, 880, 806), cls="kb", radius=10, clip_id="vid")
+             + (video_frames((fx, fy, fw, fh)) if FRAMES else
+                image("portrait.jpg", (fx, fy, fw, fh), (90, 40, 880, 806), cls="kb", radius=10, clip_id="vid"))
              + f'<rect x="{fx}" y="{fy}" width="{fw}" height="{fh}" rx="10" fill="url(#vfade)"/>'
              + f'<rect x="{fx}" y="{fy}" width="{fw}" height="{fh}" rx="10" fill="url(#scan)"/></g>')
     for cx, cy, sx, sy in ((fx - 10, fy - 10, 1, 1), (fx + fw + 10, fy - 10, -1, 1),
@@ -384,10 +413,11 @@ def hero_svg(d):
         p.append(f'<path d="M{cx} {cy + 26 * sy}V{cy}H{cx + 26 * sx}" fill="none" stroke="{ICE}" stroke-width="2.5"/>')
     p.append(star4(fx + fw - 34, fy + 40, 11, ICE, .9, "spin2"))
     p.append(T(fx + 26, fy + fh - 30, "MAGE.MP4", 11, INK, "b", ls=2.5))
-    p.append(T(fx + fw - 26, fy + fh - 30, "VIZJA · 00:16", 11, MUTED, "b", anchor="end", ls=1.5))
+    cycle = video_cycle()
+    p.append(T(fx + fw - 26, fy + fh - 30, f"VIZJA · 00:{round(cycle):02d}", 11, MUTED, "b", anchor="end", ls=1.5))
     p.append(f'<rect x="{fx + 26}" y="{fy + fh - 18}" width="{fw - 52}" height="3" rx="1.5" fill="#ffffff" '
              f'fill-opacity=".15"/><rect x="{fx + 26}" y="{fy + fh - 18}" width="0" height="3" rx="1.5" '
-             f'fill="url(#iv)"><animate attributeName="width" from="0" to="{fw - 52}" dur="16s" '
+             f'fill="url(#iv)"><animate attributeName="width" from="0" to="{fw - 52}" dur="{cycle:.2f}s" '
              'repeatCount="indefinite"/></rect>')
     p.append("</svg>")
     return "".join(p)

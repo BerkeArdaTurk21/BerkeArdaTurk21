@@ -1,26 +1,26 @@
 <div align="center">
 
 <!-- HERO: animated intro -->
-<img src="./assets/hero.svg?v=6" alt="Hi, I'm Berke Arda Türk, data science student and data mage in training" width="100%"/>
+<img src="./assets/hero.svg?v=7" alt="Hi, I'm Berke Arda Türk, data science student and data mage in training" width="100%"/>
 
 <br/><br/>
 
-<img src="./assets/familiar.svg?v=6" alt="My familiar, a floating rune medallion" width="260"/>
+<img src="./assets/familiar.svg?v=7" alt="My familiar, a floating rune medallion" width="260"/>
 
 <br/>
 
 <!-- MY MAGE WAY -->
-<img src="./assets/mage-way.svg?v=6" alt="My mage way, what I build" width="100%"/>
+<img src="./assets/mage-way.svg?v=7" alt="My mage way, what I build" width="100%"/>
 
 <br/><br/>
 
 <!-- SPELL ARSENAL -->
-<img src="./assets/spell-stack.svg?v=6" alt="Spell arsenal, my tech stack" width="100%"/>
+<img src="./assets/spell-stack.svg?v=7" alt="Spell arsenal, my tech stack" width="100%"/>
 
 <br/><br/>
 
 <!-- MAGE REGISTRATION + QUEST DASHBOARD -->
-<img src="./assets/mage-id.svg?v=6" alt="Mage registration card and live GitHub dashboard" width="100%"/>
+<img src="./assets/mage-id.svg?v=7" alt="Mage registration card and live GitHub dashboard" width="100%"/>
 
 <br/><br/>
 
@@ -46,7 +46,7 @@
 
 <br/><br/>
 
-<img src="./assets/orb.svg?v=6" alt="A spinning rune orb" width="150"/>
+<img src="./assets/orb.svg?v=7" alt="A spinning rune orb" width="150"/>
 
 ### 🌌 My contribution realm
 
@@ -57,7 +57,7 @@
 <br/><br/>
 
 <!-- JOIN THE GUILD -->
-<img src="./assets/connect.svg?v=6" alt="Let's connect" width="100%"/>
+<img src="./assets/connect.svg?v=7" alt="Let's connect" width="100%"/>
 
 <a href="https://github.com/BerkeArdaTurk21"><img src="https://img.shields.io/badge/GitHub-7dd3fc?style=for-the-badge&logo=github&logoColor=0b0f19" alt="GitHub"/></a>
 <a href="mailto:turkberkearda@gmail.com"><img src="https://img.shields.io/badge/Email-a78bfa?style=for-the-badge&logo=gmail&logoColor=0b0f19" alt="Email"/></a>
@@ -71,7 +71,7 @@
 
 <br/>
 
-<img src="./assets/sigil.svg?v=6" alt="A glowing B rune seal" width="90"/>
+<img src="./assets/sigil.svg?v=7" alt="A glowing B rune seal" width="90"/>
 
 **Baseline first, keep learning, keep shipping.** ✦
 
