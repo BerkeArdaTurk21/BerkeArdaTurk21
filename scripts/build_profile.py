@@ -27,6 +27,8 @@ from pathlib import Path
 
 USER = "BerkeArdaTurk21"
 MEDIUM_FEED = "https://medium.com/feed/@berkeardaturk"
+# GitHub caches README images; bump this (and the ?v= numbers in README.md) after a design change.
+CACHE_VERSION = 3
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
 # Artwork is embedded into the SVGs as base64, because GitHub shows README SVGs as images
@@ -558,11 +560,59 @@ def raven_svg(t):
     ])
 
 
+def sky_panel(t, w, h, seed, count, cx_ratio=.2, text_box=None):
+    """Framed panel on the night sky (or parchment) gradient with a light starfield."""
+    gradient = (f'<radialGradient id="sky" cx="{cx_ratio:.2f}" cy=".3" r=".9">'
+                f'<stop offset="0" stop-color="{t["sky_center"]}"/><stop offset="1" stop-color="{t["sky_edge"]}"/>'
+                f'</radialGradient>')
+    return gradient, framed_panel(w, h, t, fill="url(#sky)") + starfield(t, w, h, count, seed, text_box)
+
+
+SECTIONS = {
+    "about": ("ehwaz", "About", "THE APPRENTICE"),
+    "quests": ("raidho", "Featured work", "QUESTS COMPLETED AND UNDER WAY"),
+    "spellbook": ("ansuz", "Spellbook", "TOOLS I CAST WITH"),
+    "chronicles": ("berkano", "Chronicles", "LATEST WRITING ON MEDIUM"),
+}
+
+
+def section_svg(key, t):
+    """Section title banner, so headings share the theme instead of plain markdown headings."""
+    sigil, title, eyebrow = SECTIONS[key]
+    w, h = 1000, 72
+    gradient, panel = sky_panel(t, w, h, len(title) * 7, 22, cx_ratio=.1)
+    return "".join([
+        svg_open(w, h, title), ANIMATIONS, defs(t, gradient), panel,
+        rune(sigil, 30, 22, 28, t["signal"], 2, extra=glow_attr(t)),
+        text(64, 46, title, 27, t["ink"], SERIF, 600),
+        star4(w - 30 - len(eyebrow) * 8.6 - 16, 37, 5, t["signal"]),
+        text(w - 30, 41, eyebrow, 11.5, t["muted"], MONO, anchor="end", spacing=1.5),
+        "</svg>",
+    ])
+
+
+def chronicle_svg(post, index, t):
+    """One Medium post as a themed card; the README wraps it in a link."""
+    w, h = 1000, 76
+    title = post["title"] if len(post["title"]) <= 92 else post["title"][:89].rstrip() + "..."
+    gradient, panel = sky_panel(t, w, h, 40 + index, 16, cx_ratio=.05)
+    return "".join([
+        svg_open(w, h, f'{post["title"]}, {post["date"]}'), ANIMATIONS, defs(t, gradient), panel,
+        f'<circle cx="44" cy="38" r="17" fill="none" stroke="{t["signal"]}" stroke-opacity=".6"{glow_attr(t)}/>',
+        text(44, 44, ("I", "II", "III", "IV", "V")[index], 14, t["signal"], SERIF, 600, anchor="middle"),
+        text(78, 35, title, 16.5, t["ink"], SERIF, 600),
+        text(78, 56, f'{post["date"]} · Medium · read the chronicle →', 11.5, t["muted"], MONO),
+        "</svg>",
+    ])
+
+
 def card_svg(project, repo, t):
     w, h = 420, 180
+    gradient, panel = sky_panel(t, w, h, len(project["repo"]), 14)
     parts = [svg_open(w, h, f'{project["title"]}: {project["metric"]}. {project["desc"]}'),
-             defs(t),
-             framed_panel(w, h, t),
+             ANIMATIONS,
+             defs(t, gradient),
+             panel,
              rune(project["rune"], 22, 19, 18, t["signal"], 1.8, extra=glow_attr(t)),
              text(44, 35, project["title"], 17, t["ink"], SERIF, 600)]
     stars = repo.get("stargazerCount", 0)
@@ -589,7 +639,8 @@ def toolkit_svg(t):
     w, row_h = 1000, 46
     h = 44 + len(TOOLKIT) * row_h
     label = "Toolkit: " + ". ".join(f"{k}: {', '.join(v)}" for k, _, v in TOOLKIT)
-    parts = [svg_open(w, h, label), defs(t), framed_panel(w, h, t)]
+    gradient, panel = sky_panel(t, w, h, 3, 40, cx_ratio=.1)
+    parts = [svg_open(w, h, label), ANIMATIONS, defs(t, gradient), panel]
     for r, (name, sigil, items) in enumerate(TOOLKIT):
         y = 32 + r * row_h
         parts.append(rune(sigil, 34, y + 3, 17, t["signal"], 1.6, extra=glow_attr(t)))
@@ -624,9 +675,16 @@ def divider_svg(t):
 
 
 def update_writing(posts):
+    """Write one themed card per Medium post and point the README's writing block at them."""
+    for i, post in enumerate(posts):
+        write_pair(f"chronicle-{i + 1}", lambda t, p=post, k=i: chronicle_svg(p, k, t))
     readme = ROOT / "README.md"
     content = readme.read_text(encoding="utf-8")
-    lines = "\n".join(f'- [{escape(p["title"], quote=False)}]({p["link"]}) <sub>· {p["date"]}</sub>' for p in posts)
+    lines = "\n".join(
+        f'<a href="{escape(p["link"])}"><picture><source media="(prefers-color-scheme: dark)" '
+        f'srcset="./assets/chronicle-{i + 1}-dark.svg?v={CACHE_VERSION}"><img alt="{escape(p["title"])}, {p["date"]}" '
+        f'src="./assets/chronicle-{i + 1}-light.svg?v={CACHE_VERSION}" width="100%"></picture></a>'
+        for i, p in enumerate(posts))
     block = f"<!-- WRITING:START -->\n{lines}\n<!-- WRITING:END -->"
     content = re.sub(r"<!-- WRITING:START -->.*?<!-- WRITING:END -->", lambda _: block, content, flags=re.S)
     readme.write_text(content, encoding="utf-8")
@@ -643,6 +701,8 @@ def main():
         write_pair(f'card-{project["repo"].lower()}', lambda t, p=project: card_svg(p, repos.get(p["repo"], {}), t))
     write_pair("toolkit", toolkit_svg)
     write_pair("divider", divider_svg)
+    for key in SECTIONS:
+        write_pair(f"section-{key}", lambda t, k=key: section_svg(k, t))
     posts = medium_posts()
     if posts:
         update_writing(posts)
