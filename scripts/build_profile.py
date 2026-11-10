@@ -28,7 +28,7 @@ from pathlib import Path
 USER = "BerkeArdaTurk21"
 MEDIUM_FEED = "https://medium.com/feed/@berkeardaturk"
 # GitHub caches README images; bump this (and the ?v= numbers in README.md) after a design change.
-CACHE_VERSION = 4
+CACHE_VERSION = 5
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
 # Artwork is embedded into the SVGs as base64, because GitHub shows README SVGs as images
@@ -601,6 +601,52 @@ def section_svg(key, t):
     ])
 
 
+LINKS = [
+    ("website", "Website", "othala", "https://berkeardaturk.com"),          # home
+    ("linkedin", "LinkedIn", "mannaz", "https://www.linkedin.com/in/berke-arda-turk/"),  # people
+    ("kaggle", "Kaggle", "tiwaz", "https://www.kaggle.com/berketurk"),      # contest
+    ("medium", "Medium", "ansuz", "https://medium.com/@berkeardaturk"),     # words
+    ("email", "Email", "raidho", "mailto:turkberkearda@gmail.com"),         # message
+]
+
+
+def link_svg(index, t):
+    """One link button of a row that spans exactly the 1000-wide grid with even 8px gaps.
+
+    Each button image is 200 wide (20% of the row); the panel inside is shifted so the
+    first and last buttons meet the outer edges of the other sections.
+    """
+    _, label, sigil, _ = LINKS[index]
+    n, gap, w, h = len(LINKS), 8, 200, 54
+    pw = (1000 - gap * (n - 1)) / n
+    x0 = index * (pw + gap) - index * w
+    gradient, panel = sky_panel(t, pw, h - 4, 50 + index, 8, cx_ratio=.3)
+    # Fixed slots (rune left, label centered, arrow right) so no text width guessing is needed.
+    return "".join([
+        svg_open(w, h, label), ANIMATIONS, defs(t, gradient),
+        f'<g transform="translate({x0:.2f} 0)">{panel}',
+        rune(sigil, 20, 16, 18, t["signal"], 1.7, extra=glow_attr(t)),
+        text(round(pw / 2 + 4, 1), 31, label, 16, t["ink"], SERIF, 600, anchor="middle"),
+        text(round(pw - 18, 1), 31, "→", 14, t["signal"], SANS, anchor="end"),
+        "</g></svg>",
+    ])
+
+
+def archive_svg(t):
+    """Full-width bar that links to all repositories."""
+    w, h = 1000, 58
+    gradient, panel = sky_panel(t, w, h, 61, 20, cx_ratio=.5)
+    return "".join([
+        svg_open(w, h, "All repositories"), ANIMATIONS, defs(t, gradient), panel,
+        diamond(330, 29, 3.5, t["signal"], .8),
+        diamond(670, 29, 3.5, t["signal"], .8),
+        rune("othala", 384, 19, 20, t["signal"], 1.7, extra=glow_attr(t)),
+        text(500, 35, "Open the full archive", 17, t["ink"], SERIF, 600, anchor="middle"),
+        text(612, 35, "→", 15, t["signal"], SANS),
+        "</svg>",
+    ])
+
+
 def about_svg(t):
     """About text on the same night sky panel as the other sections (markdown text cannot have a background)."""
     lines = wrap(ABOUT_TEXT, 118)
@@ -742,6 +788,9 @@ def main():
         write_pair(f'card-{project["repo"].lower()}',
                    lambda t, p=project, s=i % 2: card_svg(p, repos.get(p["repo"], {}), t, s))
     write_pair("about", about_svg)
+    write_pair("archive", archive_svg)
+    for i, link in enumerate(LINKS):
+        write_pair(f"link-{link[0]}", lambda t, k=i: link_svg(k, t))
     write_pair("toolkit", toolkit_svg)
     write_pair("divider", divider_svg)
     for key in SECTIONS:
