@@ -1,7 +1,7 @@
 <a href="https://berkeardaturk.com">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/header-dark.svg">
-    <img alt="Berke Arda Türk, data mage in training: machine learning and data science" src="./assets/header-light.svg" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="./assets/header-dark.svg?v=2">
+    <img alt="Berke Arda Türk, data mage in training: machine learning and data science" src="./assets/header-light.svg?v=2" width="100%">
   </picture>
 </a>
 
@@ -14,8 +14,8 @@
 </p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/path-dark.svg">
-  <img alt="The Mage's Path: guarding models against leakage with foldsafe, explaining every prediction, taming big data with PySpark" src="./assets/path-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/path-dark.svg?v=2">
+  <img alt="The Mage's Path: guarding models against leakage with foldsafe, explaining every prediction, taming big data with PySpark" src="./assets/path-light.svg?v=2" width="100%">
 </picture>
 
 ## ✦ About
@@ -27,19 +27,19 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 - **Open to** machine learning and data roles.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/guild-dark.svg">
-  <img alt="Guild card: Berke Arda Türk, Apprentice Data Mage, Vizja University, Artificial Intelligence and Data Science. Quest log of recent milestones" src="./assets/guild-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/guild-dark.svg?v=2">
+  <img alt="Guild card: Berke Arda Türk, Apprentice Data Mage, Vizja University, Artificial Intelligence and Data Science. Quest log of recent milestones" src="./assets/guild-light.svg?v=2" width="100%">
 </picture>
 
 ## ✦ Featured work
 
 <p>
-  <a href="https://github.com/BerkeArdaTurk21/foldsafe"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-foldsafe-dark.svg"><img alt="foldsafe" src="./assets/card-foldsafe-light.svg" width="49%"></picture></a>
-  <a href="https://github.com/BerkeArdaTurk21/kaggle-titanic"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-kaggle-titanic-dark.svg"><img alt="Kaggle Titanic" src="./assets/card-kaggle-titanic-light.svg" width="49%"></picture></a>
-  <a href="https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-customer-churn-shap-dashboard-dark.svg"><img alt="Churn SHAP Dashboard" src="./assets/card-customer-churn-shap-dashboard-light.svg" width="49%"></picture></a>
-  <a href="https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-stock-sentiment-predictor-dark.svg"><img alt="Stock Sentiment" src="./assets/card-stock-sentiment-predictor-light.svg" width="49%"></picture></a>
-  <a href="https://github.com/BerkeArdaTurk21/EconoScope"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-econoscope-dark.svg"><img alt="EconoScope" src="./assets/card-econoscope-light.svg" width="49%"></picture></a>
-  <a href="https://github.com/BerkeArdaTurk21/Python-RoadMap"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-python-roadmap-dark.svg"><img alt="Python RoadMap" src="./assets/card-python-roadmap-light.svg" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/foldsafe"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-foldsafe-dark.svg?v=2"><img alt="foldsafe" src="./assets/card-foldsafe-light.svg?v=2" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/kaggle-titanic"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-kaggle-titanic-dark.svg?v=2"><img alt="Kaggle Titanic" src="./assets/card-kaggle-titanic-light.svg?v=2" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-customer-churn-shap-dashboard-dark.svg?v=2"><img alt="Churn SHAP Dashboard" src="./assets/card-customer-churn-shap-dashboard-light.svg?v=2" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-stock-sentiment-predictor-dark.svg?v=2"><img alt="Stock Sentiment" src="./assets/card-stock-sentiment-predictor-light.svg?v=2" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/EconoScope"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-econoscope-dark.svg?v=2"><img alt="EconoScope" src="./assets/card-econoscope-light.svg?v=2" width="49%"></picture></a>
+  <a href="https://github.com/BerkeArdaTurk21/Python-RoadMap"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-python-roadmap-dark.svg?v=2"><img alt="Python RoadMap" src="./assets/card-python-roadmap-light.svg?v=2" width="49%"></picture></a>
 </p>
 
 <p align="right"><sub><a href="https://github.com/BerkeArdaTurk21?tab=repositories">All repositories →</a></sub></p>
@@ -47,8 +47,8 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 ## ✦ Spellbook
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/toolkit-dark.svg">
-  <img alt="Languages: Python, SQL, TypeScript, Java. Machine learning: scikit-learn, XGBoost, SHAP, PyTorch (learning). Data and analysis: pandas, NumPy, Matplotlib, Seaborn, Jupyter. Big data and databases: PySpark, MySQL, SQLite. Apps and engineering: Streamlit, React, Tailwind, Git." src="./assets/toolkit-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/toolkit-dark.svg?v=2">
+  <img alt="Languages: Python, SQL, TypeScript, Java. Machine learning: scikit-learn, XGBoost, SHAP, PyTorch (learning). Data and analysis: pandas, NumPy, Matplotlib, Seaborn, Jupyter. Big data and databases: PySpark, MySQL, SQLite. Apps and engineering: Streamlit, React, Tailwind, Git." src="./assets/toolkit-light.svg?v=2" width="100%">
 </picture>
 
 ## ✦ Chronicles
@@ -60,8 +60,8 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 <!-- WRITING:END -->
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/raven-dark.svg">
-  <img alt="Send a raven: open to machine learning and data roles, and to collaboration on data science projects" src="./assets/raven-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/raven-dark.svg?v=2">
+  <img alt="Send a raven: open to machine learning and data roles, and to collaboration on data science projects" src="./assets/raven-light.svg?v=2" width="100%">
 </picture>
 
 <p align="center">
@@ -73,6 +73,6 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 </p>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/divider-dark.svg">
-  <img alt="" src="./assets/divider-light.svg" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/divider-dark.svg?v=2">
+  <img alt="" src="./assets/divider-light.svg?v=2" width="100%">
 </picture>
