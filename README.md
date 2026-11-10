@@ -1,7 +1,7 @@
 <a href="https://berkeardaturk.com">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="./assets/header-dark.svg">
-    <img alt="Berke Arda Türk: machine learning and data science" src="./assets/header-light.svg" width="100%">
+    <img alt="Berke Arda Türk, data mage in training: machine learning and data science" src="./assets/header-light.svg" width="100%">
   </picture>
 </a>
 
@@ -13,7 +13,12 @@
   <a href="mailto:turkberkearda@gmail.com"><b>Email</b></a>
 </p>
 
-## About
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/path-dark.svg">
+  <img alt="The Mage's Path: guarding models against leakage with foldsafe, explaining every prediction, taming big data with PySpark" src="./assets/path-light.svg" width="100%">
+</picture>
+
+## ✦ About
 
 I'm a Computer Science undergraduate at Vizja University, specialising in AI and Data Science. I like taking a real dataset all the way to an honest answer: a simple baseline first, validation without leakage, and a clear note on what the model cannot do. The results that hold up become apps and write-ups.
 
@@ -21,7 +26,12 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 - **Writing** about my data projects on [Medium](https://medium.com/@berkeardaturk).
 - **Open to** machine learning and data roles.
 
-## Featured work
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/guild-dark.svg">
+  <img alt="Guild card: Berke Arda Türk, Apprentice Data Mage, Vizja University, Artificial Intelligence and Data Science. Quest log of recent milestones" src="./assets/guild-light.svg" width="100%">
+</picture>
+
+## ✦ Featured work
 
 <p>
   <a href="https://github.com/BerkeArdaTurk21/foldsafe"><picture><source media="(prefers-color-scheme: dark)" srcset="./assets/card-foldsafe-dark.svg"><img alt="foldsafe" src="./assets/card-foldsafe-light.svg" width="49%"></picture></a>
@@ -34,14 +44,14 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 
 <p align="right"><sub><a href="https://github.com/BerkeArdaTurk21?tab=repositories">All repositories →</a></sub></p>
 
-## Toolkit
+## ✦ Spellbook
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/toolkit-dark.svg">
   <img alt="Languages: Python, SQL, TypeScript, Java. Machine learning: scikit-learn, XGBoost, SHAP, PyTorch (learning). Data and analysis: pandas, NumPy, Matplotlib, Seaborn, Jupyter. Big data and databases: PySpark, MySQL, SQLite. Apps and engineering: Streamlit, React, Tailwind, Git." src="./assets/toolkit-light.svg" width="100%">
 </picture>
 
-## Latest writing
+## ✦ Chronicles
 
 <!-- WRITING:START -->
 - [What My First Kaggle Project Taught Me About Data Leakage and Simple Models](https://medium.com/@berkeardaturk/what-my-first-kaggle-project-taught-me-about-data-leakage-and-simple-models-c7c2b174e6f2) <sub>· Oct 22, 2026</sub>
@@ -49,8 +59,20 @@ I'm a Computer Science undergraduate at Vizja University, specialising in AI and
 - [I Analysed 50 Years of Global Inflation Data — Here’s What I Found](https://medium.com/@berkeardaturk/i-analysed-50-years-of-global-inflation-data-heres-what-i-found-7a511fd15c73) <sub>· May 18, 2026</sub>
 <!-- WRITING:END -->
 
----
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/raven-dark.svg">
+  <img alt="Send a raven: open to machine learning and data roles, and to collaboration on data science projects" src="./assets/raven-light.svg" width="100%">
+</picture>
 
 <p align="center">
-  <sub>Open to collaboration on data science and ML projects. Questions or ideas? <a href="mailto:turkberkearda@gmail.com">turkberkearda@gmail.com</a></sub>
+  <a href="https://berkeardaturk.com"><img alt="Website" src="https://img.shields.io/badge/Website-0d1525?style=for-the-badge&logo=googlechrome&logoColor=7dd3fc"></a>
+  <a href="https://www.linkedin.com/in/berke-arda-turk/"><img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-0d1525?style=for-the-badge"></a>
+  <a href="https://www.kaggle.com/berketurk"><img alt="Kaggle" src="https://img.shields.io/badge/Kaggle-0d1525?style=for-the-badge&logo=kaggle&logoColor=7dd3fc"></a>
+  <a href="https://medium.com/@berkeardaturk"><img alt="Medium" src="https://img.shields.io/badge/Medium-0d1525?style=for-the-badge&logo=medium&logoColor=7dd3fc"></a>
+  <a href="mailto:turkberkearda@gmail.com"><img alt="Email" src="https://img.shields.io/badge/Email-0d1525?style=for-the-badge&logo=gmail&logoColor=7dd3fc"></a>
 </p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/divider-dark.svg">
+  <img alt="" src="./assets/divider-light.svg" width="100%">
+</picture>
