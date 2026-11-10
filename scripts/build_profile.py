@@ -1,14 +1,15 @@
-"""Build the profile README assets.
+"""Build the animated profile README assets.
 
-Writes light and dark SVGs for the header, project cards, toolkit and divider,
-and refreshes the "Latest writing" list in README.md from Medium.
-The look follows the profile portrait: a data mage theme with a midnight sky,
-ice blue glow, floating runes and a rune circle around a small neural network.
-The dark theme is the night sky; the light theme is parchment with ink blue.
-Runes are drawn as SVG paths (no font needed), so they render everywhere.
-Standard library only. Needs a GitHub token in GH_TOKEN or GITHUB_TOKEN for
-the star counts and languages on the project cards (the GitHub Action passes
-its own token).
+Layout: an animated hero with a "video" frame, a familiar, My mage way, the spell
+arsenal, a mage registration card with a live GitHub dashboard, the quest table,
+a 3D contribution realm (made by a separate Action step) and a connect panel.
+The character is the data mage from assets/art. Everything is drawn here from
+scratch; artwork and the JetBrains Mono font (SIL OFL) are embedded as base64
+because GitHub shows README SVGs as images, which cannot load other files.
+Tech logos come from Simple Icons (CC0), stored in assets/icons.json.
+
+Standard library only. Needs a GitHub token in GH_TOKEN or GITHUB_TOKEN for the
+live numbers (the GitHub Action passes its own token).
 
 Usage: python scripts/build_profile.py
 """
@@ -21,56 +22,32 @@ import random
 import re
 import sys
 import urllib.request
-import xml.etree.ElementTree as ET
 from html import escape
 from pathlib import Path
 
 USER = "BerkeArdaTurk21"
-MEDIUM_FEED = "https://medium.com/feed/@berkeardaturk"
-# GitHub caches README images; bump this (and the ?v= numbers in README.md) after a design change.
-CACHE_VERSION = 5
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
-# Artwork is embedded into the SVGs as base64, because GitHub shows README SVGs as images
-# and an SVG shown as an image cannot load other files.
 ART = ASSETS / "art"
-PORTRAIT = "portrait.jpg"  # square portrait; crops below are in 1024 x 1024 source units
-PORTRAIT_UNITS = 1024
-CROP_HERO = (150, 50, 850, 940)    # hood, face, hand and rune circle
-CROP_FACE = (300, 150, 450, 450)   # face for the guild card medallion
-CROP_SIGIL = (560, 430, 440, 520)  # hand with the glowing rune circle
-# Optional scene paintings: drop a JPEG with this name into assets/art and it replaces the portrait crop.
-SCENE_PATH = "scene-path.jpg"
-SCENE_RAVEN = "scene-raven.jpg"
+FONTS = ASSETS / "fonts"
+ICONS = json.loads((ASSETS / "icons.json").read_text(encoding="utf-8"))
+# GitHub caches README images; bump this (and the ?v= numbers in README.md) after a design change.
+CACHE_VERSION = 6
+W = 1280
 
-# Dark: midnight sky with the ice blue of berkeardaturk.com. Light: parchment with ink blue.
-THEMES = {
-    "dark": {
-        "card": "#0d1525", "inset": "#08101d", "line": "#22314a", "axis": "#3a4a66",
-        "ink": "#e8f1fb", "muted": "#93a3b8", "signal": "#7dd3fc",
-        "sky_center": "#173352", "sky_edge": "#0a1222", "star": "#cfe9ff", "glow": True,
-    },
-    "light": {
-        "card": "#f8f2e4", "inset": "#fffaf0", "line": "#dccfb2", "axis": "#b9a983",
-        "ink": "#2b2416", "muted": "#6b5d45", "signal": "#0b5f80",
-        "sky_center": "#fdf8ec", "sky_edge": "#f0e6cf", "star": "#a8946a", "glow": False,
-    },
-}
-
-SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif"
-SERIF = "'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif"
-MONO = "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace"
+# Palette: night sky with ice blue and violet light, like the portrait.
+BG, PANEL, PANEL2 = "#0b0f19", "#121826", "#161e2f"
+LINE, INK, MUTED, DIM = "#232c3f", "#e6edf6", "#8b97ab", "#5b667a"
+ICE, ICE2, VIOLET, GOLD, GREEN = "#7dd3fc", "#38bdf8", "#a78bfa", "#fbbf24", "#34d399"
 
 # Elder Futhark runes as stroke paths in a unit box (about 0.5 wide, 1 tall).
 RUNES = {
     "fehu": "M0 0V1M0 .3L.45 .05M0 .55L.45 .3",
     "uruz": "M0 1V0L.5 .3V1",
-    "thurisaz": "M0 0V1M0 .25L.4 .5L0 .75",
     "ansuz": "M0 0V1M0 0L.45 .25M0 .3L.45 .55",
     "raidho": "M0 1V0L.45 .25L0 .5L.45 1",
     "kenaz": "M.45 .15L0 .5L.45 .85",
     "gebo": "M0 0L.5 1M.5 0L0 1",
-    "isa": "M.25 0V1",
     "algiz": "M.25 0V1M.25 .4L0 0M.25 .4L.5 0",
     "sowilo": "M.45 0L0 .4L.45 .6L0 1",
     "tiwaz": "M.25 0V1M0 .3L.25 0L.5 .3",
@@ -82,227 +59,219 @@ RUNES = {
     "dagaz": "M0 0V1L.5 0V1L0 0",
     "othala": "M.25 0L.5 .3L0 .9M.25 0L0 .3L.5 .9",
 }
-# "BERKE ARDA TURK" spelled in runes; None marks a word break.
-NAME_RUNES = ["berkano", "ehwaz", "raidho", "kenaz", "ehwaz", None,
-              "ansuz", "raidho", "dagaz", "ansuz", None,
-              "tiwaz", "uruz", "raidho", "kenaz", None]
+NAME_RUNES = ["berkano", "ehwaz", "raidho", "kenaz", "ehwaz", None, "ansuz", "raidho", "dagaz", "ansuz",
+              None, "tiwaz", "uruz", "raidho", "kenaz", None]
 
-# Featured projects, in the same order as the pinned repos. Metrics come from each repo's README.
-# Each card carries a rune that fits the project.
+ROLES = ["Data Science Student", "Machine Learning Apprentice", "Data Leakage Hunter"]
+MOTTO = "Baseline first. Then magic."
+
+WAY = [
+    ("algiz", "Models that do not leak",
+     "foldsafe flags data leakage before cross-validation scores mislead you"),
+    ("kenaz", "Predictions you can explain",
+     "A simple baseline first, SHAP for every prediction, honest notes on limits"),
+    ("raidho", "Data at scale",
+     "Apache Spark and PySpark pipelines in a university team project"),
+]
+
+# (label, icon key in icons.json or a rune name, colour)
+SPELLS = [
+    ("Python", "python", "#3776AB"), ("SQL", "mysql", "#4479A1"), ("TypeScript", "typescript", "#3178C6"),
+    ("Java", "openjdk", "#ED8B00"), ("React", "react", "#61DAFB"),
+    ("scikit-learn", "scikitlearn", "#F7931E"), ("XGBoost", "rune:ingwaz", "#3AB7BF"),
+    ("SHAP", "rune:kenaz", "#FF0D57"), ("PyTorch", "pytorch", "#EE4C2C"), ("pandas", "pandas", "#E70488"),
+    ("NumPy", "numpy", "#4DABCF"), ("Jupyter", "jupyter", "#F37626"), ("PySpark", "apachespark", "#E25A1C"),
+    ("Streamlit", "streamlit", "#FF4B4B"), ("Git", "git", "#F05032"),
+]
+
+MANA = [
+    (ICE, "TABULAR ML", "scikit-learn · XGBoost", "leak-free pipelines, CV done right"),
+    (VIOLET, "EXPLAINABILITY", "SHAP · plain words", "every prediction gets a why"),
+    (GOLD, "BIG DATA", "PySpark · Apache Spark", "university team project"),
+]
+
+CONTACTS = [
+    ("github", "#e6edf6", "GitHub", "@BerkeArdaTurk21"),
+    ("gmail", "#EA4335", "Email", "turkberkearda@gmail.com"),
+    ("linkedin", "#0A66C2", "LinkedIn", "in/berke-arda-turk"),
+    ("kaggle", "#20BEFF", "Kaggle", "@berketurk"),
+]
+
+# Quest table, in the same order as the pinned repos.
 FEATURED = [
-    {"repo": "foldsafe", "title": "foldsafe", "rune": "algiz",  # protection
-     "desc": "Static analyzer and agent skill that catch data leakage in ML code before cross-validation scores mislead you.",
-     "metric": "Pre-alpha · 8 rules planned", "tags": ["static analysis", "agent skill"]},
-    {"repo": "kaggle-titanic", "title": "Kaggle Titanic", "rune": "laguz",  # water
-     "desc": "End-to-end tabular ML: leak-free scikit-learn pipelines, nested cross-validation and a group survival feature.",
-     "metric": "Kaggle 0.794 · CV 0.841", "tags": ["scikit-learn", "XGBoost"]},
-    {"repo": "customer-churn-shap-dashboard", "title": "Churn SHAP Dashboard", "rune": "kenaz",  # torch, insight
-     "desc": "XGBoost churn model with a SHAP explanation for every prediction, served as a Streamlit app.",
-     "metric": "ROC-AUC 0.84 · recall 79%", "tags": ["XGBoost", "SHAP"]},
-    {"repo": "Stock-Sentiment-Predictor", "title": "Stock Sentiment", "rune": "fehu",  # wealth
-     "desc": "Three-class sentiment on 4,846 financial news headlines with TF-IDF and LinearSVC, plus a Streamlit app.",
-     "metric": "74.5% accuracy · baseline 59.4%", "tags": ["NLP", "scikit-learn"]},
-    {"repo": "EconoScope", "title": "EconoScope", "rune": "dagaz",  # day, the passing of time
-     "desc": "Exploratory analysis of inflation in 212 countries: five measures, country comparisons and crisis periods.",
-     "metric": "212 countries · 1970-2022", "tags": ["EDA", "pandas"]},
-    {"repo": "Python-RoadMap", "title": "Python RoadMap", "rune": "raidho",  # journey
-     "desc": "Eight weeks of daily Python lessons with quizzes and exercises, plus four standard-library projects.",
-     "metric": "63 lessons · 4 projects", "tags": ["Python", "learning"]},
+    ("foldsafe", "foldsafe", "Static analyzer and agent skill that catch data leakage in ML code",
+     ["Python", "static analysis"]),
+    ("kaggle-titanic", "Kaggle Titanic", "Leak-free pipelines and nested CV · Kaggle 0.794",
+     ["scikit-learn", "XGBoost"]),
+    ("customer-churn-shap-dashboard", "Churn SHAP Dashboard", "XGBoost churn model with a SHAP why for every prediction",
+     ["XGBoost", "SHAP", "Streamlit"]),
+    ("Stock-Sentiment-Predictor", "Stock Sentiment", "Three-class sentiment on 4,846 financial headlines",
+     ["NLP", "scikit-learn"]),
+    ("EconoScope", "EconoScope", "Inflation in 212 countries, 1970-2022",
+     ["pandas", "EDA"]),
+    ("Python-RoadMap", "Python RoadMap", "Eight weeks of daily lessons, quizzes and four projects",
+     ["Python"]),
 ]
 
-TOOLKIT = [
-    ("Languages", "ansuz", ["Python", "SQL", "TypeScript", "Java"]),
-    ("Machine learning", "kenaz", ["scikit-learn", "XGBoost", "SHAP", "PyTorch (learning)"]),
-    ("Data & analysis", "sowilo", ["pandas", "NumPy", "Matplotlib", "Seaborn", "Jupyter"]),
-    ("Big data & databases", "ingwaz", ["PySpark", "MySQL", "SQLite"]),
-    ("Apps & engineering", "tiwaz", ["Streamlit", "React", "Tailwind", "Git"]),
-]
+# Octicons (MIT) for the dashboard tiles, 16 x 16.
+OCT = {
+    "repo": ("M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5"
+             "h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708"
+             "A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087"
+             "a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"),
+    "star": ("M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192"
+             "a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1"
+             " .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"),
+    "fork": ("M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25"
+             " 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1"
+             " 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75"
+             "a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z"),
+    "person": ("M10.561 8.073a6.005 6.005 0 0 1 3.432 5.142.75.75 0 1 1-1.498.07 4.5 4.5 0 0 0-8.99 0 .75.75 0 0 1"
+               "-1.498-.07 6.004 6.004 0 0 1 3.431-5.142 3.999 3.999 0 1 1 5.123 0ZM10.5 5a2.5 2.5 0 1 0-5 0 2.5 2.5"
+               " 0 0 0 5 0Z"),
+}
 
-PATH_ITEMS = [
-    ("algiz", "Guarding models against leakage",
-     "Building foldsafe, an open-source checker that flags data leakage before cross-validation scores mislead you."),
-    ("kenaz", "Explaining every prediction",
-     "A simple baseline first, then models whose decisions I can show with SHAP and plain words."),
-    ("raidho", "Taming big data",
-     "Distributed data processing with Apache Spark and PySpark in a university team project."),
-]
 
-# Static milestones, newest first. No live counters on purpose.
-QUEST_LOG = [
-    ("Oct 2026", "Raised my own tower: berkeardaturk.com"),
-    ("Oct 2026", "Began foldsafe, a guard against data leakage"),
-    ("Oct 2026", "First Kaggle quest: Titanic, score 0.794"),
-    ("May 2026", "Explained churn predictions with SHAP"),
-    ("May 2026", "Read 50 years of inflation in 212 countries"),
-]
+# --- building blocks ---------------------------------------------------------
 
-ABOUT_TEXT = ("I'm a Computer Science undergraduate at Vizja University, specialising in AI and Data Science. "
-              "I like taking a real dataset all the way to an honest answer: a simple baseline first, validation "
-              "without leakage, and a clear note on what the model cannot do. The results that hold up become "
-              "apps and write-ups.")
-ABOUT_POINTS = [
-    ("kenaz", "Focused on", "machine learning on tabular data, model explainability and big data with PySpark."),
-    ("berkano", "Writing", "about my data projects on Medium."),
-    ("gebo", "Open to", "machine learning and data roles."),
-]
+def b64(path):
+    return base64.b64encode(path.read_bytes()).decode("ascii")
 
-GUILD_FIELDS = [
-    ("NAME", "Berke Arda Türk"),
-    ("RANK", "Apprentice Data Mage"),
-    ("GUILD", "Vizja University · Computer Science"),
-    ("SCHOOL", "Artificial Intelligence & Data Science"),
-    ("CURRENT QUEST", "foldsafe"),
-]
 
-STAR_PATH = ("M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97"
-             ".719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194"
-             "L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z")
+FONT_CSS = "".join(
+    f"@font-face{{font-family:'{family}';src:url(data:font/woff2;base64,{b64(FONTS / file)}) format('woff2')}}"
+    for family, file in (("JBM", "JetBrainsMono-Regular.woff2"), ("JBMB", "JetBrainsMono-Bold.woff2"),
+                         ("JBMX", "JetBrainsMono-ExtraBold.woff2")))
+FALLBACK = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
 
-ANIMATIONS = (
-    "<style>"
-    ".flow{animation:flow 1.4s linear infinite}@keyframes flow{to{stroke-dashoffset:-10}}"
-    ".spin{animation:spin 120s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}"
-    ".tw{animation:tw 3.2s ease-in-out infinite}@keyframes tw{50%{opacity:.15}}"
-    ".drift{animation:drift 7s ease-in-out infinite}@keyframes drift{50%{transform:translateY(-6px)}}"
-    "@media (prefers-reduced-motion:reduce){.flow,.spin,.tw,.drift{animation:none}}"
-    "</style>"
+CSS = (
+    "text{font-family:'JBM'," + FALLBACK + ";font-variant-ligatures:none;font-feature-settings:'liga' 0,'calt' 0}"
+    ".b{font-family:'JBMB'," + FALLBACK + ";font-weight:700}"
+    ".x{font-family:'JBMX'," + FALLBACK + ";font-weight:800}"
+    ".fu{opacity:0;animation:fu .9s ease forwards}"
+    "@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}"
+    ".fl{opacity:0;animation:fl 1s ease forwards}"
+    "@keyframes fl{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}"
+    ".fi{opacity:0;animation:fi 1.2s ease forwards}@keyframes fi{to{opacity:1}}"
+    ".blink{animation:bl 1s steps(1) infinite}@keyframes bl{50%{opacity:0}}"
+    ".tw{animation:tw 3.4s ease-in-out infinite}@keyframes tw{50%{opacity:.15}}"
+    ".pulse{animation:pu 3.2s ease-in-out infinite}@keyframes pu{50%{opacity:.4}}"
+    ".spin{animation:sp 60s linear infinite;transform-box:fill-box;transform-origin:center}"
+    ".spin2{animation:sp 12s linear infinite;transform-box:fill-box;transform-origin:center}"
+    "@keyframes sp{to{transform:rotate(360deg)}}"
+    ".kb{animation:kb 16s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}"
+    "@keyframes kb{from{transform:scale(1)}to{transform:scale(1.09) translate(-8px,-6px)}}"
+    ".bob{animation:bob 3.2s ease-in-out infinite}@keyframes bob{50%{transform:translateY(-8px)}}"
+    ".grow{transform:scaleX(0);transform-box:fill-box;transform-origin:left;"
+    "animation:gr 1.8s cubic-bezier(.2,.8,.2,1) forwards}@keyframes gr{to{transform:scaleX(1)}}"
+    ".role{opacity:0;animation:ro 9s ease infinite}"
+    "@keyframes ro{0%{opacity:0;transform:translateY(8px)}5%,30%{opacity:1;transform:none}36%,100%{opacity:0}}"
+    "@media (prefers-reduced-motion:reduce){*{animation:none!important}.fu,.fl,.fi{opacity:1}"
+    ".grow{transform:none}.role{opacity:0}.role0{opacity:1}}"
 )
 
 
-# --- helpers -----------------------------------------------------------------
-
-def svg_open(width, height, label):
-    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-            f'viewBox="0 0 {width} {height}" role="img" aria-label="{escape(label)}">'
-            f'<title>{escape(label)}</title>')
-
-
-def defs(t, extra=""):
-    """Glow filter (dark theme only) plus any extra gradient definitions."""
-    glow = ('<filter id="glow" x="-50%" y="-50%" width="200%" height="200%">'
-            '<feGaussianBlur stdDeviation="2.2" result="b"/>'
-            '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>')
-    return f"<defs>{glow if t['glow'] else ''}{extra}</defs>"
-
-
-def glow_attr(t):
-    return ' filter="url(#glow)"' if t["glow"] else ""
-
-
-def framed_panel(width, height, t, fill=None):
-    """Card with an inner frame and small diamond ornaments in the corners."""
-    parts = [f'<rect x=".5" y=".5" width="{width - 1}" height="{height - 1}" rx="7" '
-             f'fill="{fill or t["card"]}" stroke="{t["line"]}"/>',
-             f'<rect x="6.5" y="6.5" width="{width - 13}" height="{height - 13}" rx="3" '
-             f'fill="none" stroke="{t["line"]}" stroke-opacity=".7"/>']
-    for x, y in ((6.5, 6.5), (width - 6.5, 6.5), (6.5, height - 6.5), (width - 6.5, height - 6.5)):
-        parts.append(diamond(x, y, 3.2, t["signal"]))
-    return "".join(parts)
+def svg_open(w, h, label, extra_defs=""):
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" '
+            f'role="img" aria-label="{escape(label)}"><title>{escape(label)}</title>'
+            f"<style>{FONT_CSS}{CSS}</style>"
+            "<defs>"
+            '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" '
+            'result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+            '<filter id="glow2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8" '
+            'result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+            f'<linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{ICE}" '
+            f'stop-opacity=".7"/><stop offset=".45" stop-color="{LINE}"/><stop offset="1" stop-color="{VIOLET}" '
+            'stop-opacity=".6"/></linearGradient>'
+            f'<linearGradient id="iv" x1="0" x2="1"><stop offset="0" stop-color="{ICE}"/>'
+            f'<stop offset="1" stop-color="{VIOLET}"/></linearGradient>'
+            '<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">'
+            '<circle cx="1" cy="1" r="1" fill="#ffffff" fill-opacity=".05"/></pattern>'
+            f"{extra_defs}</defs>")
 
 
-def diamond(x, y, r, fill, opacity=1):
-    return (f'<path d="M{x} {y - r}L{x + r} {y}L{x} {y + r}L{x - r} {y}Z" fill="{fill}" '
-            f'fill-opacity="{opacity}"/>')
+def T(x, y, value, size, fill, cls="", anchor="start", ls=0, delay=None, opacity=None, extra=""):
+    attrs = f' class="{cls}"' if cls else ""
+    if ls:
+        attrs += f' letter-spacing="{ls}"'
+    if delay is not None:
+        attrs += f' style="animation-delay:{delay}s"'
+    if opacity is not None:
+        attrs += f' fill-opacity="{opacity}"'
+    return (f'<text x="{x}" y="{y}" font-size="{size}" fill="{fill}" text-anchor="{anchor}"{attrs}{extra}>'
+            f"{escape(str(value))}</text>")
 
 
-def star4(x, y, r, fill, opacity=1):
-    """Four-pointed sparkle."""
-    k = r * 0.28
-    return (f'<path d="M{x} {y - r}Q{x + k} {y - k} {x + r} {y}Q{x + k} {y + k} {x} {y + r}'
-            f'Q{x - k} {y + k} {x - r} {y}Q{x - k} {y - k} {x} {y - r}Z" fill="{fill}" fill-opacity="{opacity}"/>')
+def frame(w, h, glow_x, glow_y, glow_color=ICE, glow_r=380):
+    """Rounded dark panel with a coloured glow, dot grid and gradient edge."""
+    return (f'<radialGradient id="glowbg" cx="{glow_x / w:.3f}" cy="{glow_y / h:.3f}" r="{glow_r / w:.3f}" '
+            f'gradientTransform="translate({glow_x / w:.3f} {glow_y / h:.3f}) scale(1 {w / h:.3f}) '
+            f'translate({-glow_x / w:.3f} {-glow_y / h:.3f})">'
+            f'<stop offset="0" stop-color="{glow_color}" stop-opacity=".16"/>'
+            f'<stop offset="1" stop-color="{glow_color}" stop-opacity="0"/></radialGradient>'
+            f'<rect x="1" y="1" width="{w - 2}" height="{h - 2}" rx="18" fill="{BG}"/>'
+            f'<rect x="1" y="1" width="{w - 2}" height="{h - 2}" rx="18" fill="url(#glowbg)"/>'
+            f'<rect x="1" y="1" width="{w - 2}" height="{h - 2}" rx="18" fill="url(#dots)"/>'
+            f'<rect x="1" y="1" width="{w - 2}" height="{h - 2}" rx="18" fill="none" stroke="url(#edge)" '
+            'stroke-width="1.5"/>')
 
 
-def rune(name, x, y, size, color, width=1.6, opacity=1, extra=""):
-    """Draw one rune; (x, y) is its top-left corner and size its height."""
+def rune(name, x, y, size, color, width=1.8, opacity=1, extra=""):
     return (f'<path d="{RUNES[name]}" transform="translate({x:.1f} {y:.1f}) scale({size})" fill="none" '
             f'stroke="{color}" stroke-width="{width}" stroke-opacity="{opacity}" stroke-linecap="round" '
             f'stroke-linejoin="round" vector-effect="non-scaling-stroke"{extra}/>')
 
 
-def text(x, y, value, size, fill, family=SANS, weight=400, anchor="start", spacing=0, style=""):
-    extra = f' letter-spacing="{spacing}"' if spacing else ""
-    extra += f' font-style="{style}"' if style else ""
-    return (f'<text x="{x}" y="{y}" font-family="{family}" font-size="{size}" font-weight="{weight}" '
-            f'fill="{fill}" text-anchor="{anchor}"{extra}>{escape(str(value))}</text>')
+def star4(x, y, r, fill, opacity=1, cls="", delay=0):
+    k = r * .28
+    c = f' class="{cls}" style="animation-delay:{delay}s"' if cls else ""
+    return (f'<path d="M{x} {y - r}Q{x + k} {y - k} {x + r} {y}Q{x + k} {y + k} {x} {y + r}Q{x - k} {y + k} '
+            f'{x - r} {y}Q{x - k} {y - k} {x} {y - r}Z" fill="{fill}" fill-opacity="{opacity}"{c}/>')
 
 
-def wrap(value, max_chars):
-    lines, line = [], ""
-    for word in value.split():
-        if line and len(line) + 1 + len(word) > max_chars:
-            lines.append(line)
-            line = word
+def sparkles(seed, count, box, colors=(ICE, VIOLET, "#ffffff")):
+    rng = random.Random(seed)
+    x0, y0, x1, y1 = box
+    out = []
+    for i in range(count):
+        x, y = rng.uniform(x0, x1), rng.uniform(y0, y1)
+        color = rng.choice(colors)
+        if i % 4 == 0:
+            out.append(star4(round(x, 1), round(y, 1), rng.uniform(4, 7), color, .7, "tw", round(rng.uniform(0, 3), 1)))
         else:
-            line = f"{line} {word}".strip()
-    return lines + [line] if line else lines
+            out.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(.8, 1.8):.1f}" fill="{color}" '
+                       f'fill-opacity="{rng.uniform(.25, .7):.2f}" class="tw" '
+                       f'style="animation-delay:{rng.uniform(0, 3):.1f}s"/>')
+    return "".join(out)
 
 
-def chip(x, y, label, t, size=11):
-    width = round(len(label) * size * 0.6 + 20)
-    return (f'<rect x="{x}" y="{y}" width="{width}" height="{size + 11}" rx="{(size + 11) / 2}" '
-            f'fill="{t["inset"]}" stroke="{t["signal"]}" stroke-opacity=".35"/>'
-            + text(x + width / 2, y + size + 4, label, size, t["ink"], MONO, anchor="middle")), width
-
-
-def art_href(name):
+def image(name, box, view, cls="", radius=12, clip_id=None, mask=None):
+    """Artwork in a box, cropped by a viewBox in source pixels (slice keeps the box covered)."""
     path = ART / name
-    if not path.exists():
-        return None
-    return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode("ascii")
-
-
-def arch_d(x, y, w, h):
-    r = w / 2
-    return f"M{x} {y + h}V{y + r}A{r} {r} 0 0 1 {x + w} {y + r}V{y + h}Z"
-
-
-def circle_d(cx, cy, r):
-    return f"M{cx - r} {cy}a{r} {r} 0 1 0 {2 * r} 0a{r} {r} 0 1 0 {-2 * r} 0Z"
-
-
-def framed_art(clip_id, shape, box, t, scene=None, crop=CROP_HERO):
-    """Artwork clipped to a shape with a glowing outline.
-
-    Uses the scene painting when it exists (scaled to cover the box), otherwise a crop of the portrait.
-    """
     x, y, w, h = box
-    href = art_href(scene) if scene else None
-    if href:
-        image = (f'<image href="{href}" x="{x}" y="{y}" width="{w}" height="{h}" '
-                 f'preserveAspectRatio="xMidYMid slice" clip-path="url(#{clip_id})"/>')
-    else:
-        cx0, cy0, cw, ch = crop
-        s = max(w / cw, h / ch)
-        ix = x - cx0 * s - (cw * s - w) / 2
-        iy = y - cy0 * s - (ch * s - h) / 2
-        size = PORTRAIT_UNITS * s
-        image = (f'<image href="{art_href(PORTRAIT)}" x="{ix:.1f}" y="{iy:.1f}" width="{size:.1f}" '
-                 f'height="{size:.1f}" preserveAspectRatio="none" clip-path="url(#{clip_id})"/>')
-    return "".join([
-        f'<clipPath id="{clip_id}"><path d="{shape}"/></clipPath>',
-        f'<path d="{shape}" fill="{t["inset"]}"/>',
-        image,
-        f'<path d="{shape}" fill="none" stroke="{t["signal"]}" stroke-width="1.6"{glow_attr(t)}/>',
-    ])
+    mime = "image/jpeg"
+    href = f"data:{mime};base64,{b64(path)}"
+    vx, vy, vw, vh = view
+    cid = clip_id or f"clip{abs(hash((name, box))) % 99999}"
+    img_cls = f' class="{cls}"' if cls else ""
+    m = f' mask="url(#{mask})"' if mask else ""
+    sw, sh = {"portrait.jpg": (768, 768)}.get(name, (1024, 765))
+    scale = 768 / 1024 if name == "portrait.jpg" else 1
+    return (f'<clipPath id="{cid}"><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}"/></clipPath>'
+            f'<g clip-path="url(#{cid})"{m}><svg x="{x}" y="{y}" width="{w}" height="{h}" '
+            f'viewBox="{vx * scale:.1f} {vy * scale:.1f} {vw * scale:.1f} {vh * scale:.1f}" '
+            f'preserveAspectRatio="xMidYMid slice"><image href="{href}" width="{sw}" height="{sh}"{img_cls}/></svg></g>')
 
 
-def sky(t, w, h, cx_ratio=.5, seed=21, text_box=None, count=70):
-    """Rounded panel filled with the night sky (or parchment) gradient and a starfield."""
-    gradient = (f'<radialGradient id="sky" cx="{cx_ratio:.2f}" cy=".5" r=".8">'
-                f'<stop offset="0" stop-color="{t["sky_center"]}"/><stop offset="1" stop-color="{t["sky_edge"]}"/>'
-                f'</radialGradient>')
-    return gradient, (f'<rect x=".5" y=".5" width="{w - 1}" height="{h - 1}" rx="10" fill="url(#sky)" '
-                      f'stroke="{t["line"]}"/>' + starfield(t, w, h, count, seed, text_box))
+def icon(key, x, y, size, color):
+    """Simple Icons logo (24 x 24) or a rune when the key starts with 'rune:'."""
+    if key.startswith("rune:"):
+        return rune(key[5:], x + size * .25, y, size, color, 2)
+    return f'<path d="{ICONS[key]}" transform="translate({x} {y}) scale({size / 24:.4f})" fill="{color}"/>'
 
 
-def floating_runes(items, t, size=15):
-    return "".join(f'<g class="drift" style="animation-delay:{i * .9:.1f}s">'
-                   f'{rune(name, x, y, size, t["signal"], 1.3, .38)}</g>' for i, (name, x, y) in enumerate(items))
-
-
-def write_pair(name, build):
-    for theme, t in THEMES.items():
-        (ASSETS / f"{name}-{theme}.svg").write_text(build(t), encoding="utf-8")
+def eyebrow(x, y, label, color=ICE):
+    return T(x, y, f"// {label}", 12, color, "b fu", ls=2.5, delay=.2)
 
 
 # --- data --------------------------------------------------------------------
@@ -310,12 +279,18 @@ def write_pair(name, build):
 def github_data():
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if not token:
-        sys.exit("Set GH_TOKEN or GITHUB_TOKEN to build the project cards.")
+        sys.exit("Set GH_TOKEN or GITHUB_TOKEN to build the live numbers.")
     query = """
     query($login: String!) {
       user(login: $login) {
+        createdAt
+        followers { totalCount }
         repositories(ownerAffiliations: OWNER, privacy: PUBLIC, isFork: false, first: 100) {
-          nodes { name stargazerCount primaryLanguage { name color } }
+          totalCount
+          nodes {
+            name stargazerCount forkCount
+            defaultBranchRef { target { ... on Commit { history { totalCount } } } }
+          }
         }
       }
     }"""
@@ -328,477 +303,353 @@ def github_data():
         payload = json.load(response)
     if "errors" in payload:
         sys.exit(f"GitHub API error: {payload['errors']}")
-    return payload["data"]["user"]
+    user = payload["data"]["user"]
+    nodes = user["repositories"]["nodes"]
+
+    def commits(node):
+        ref = node.get("defaultBranchRef") or {}
+        return ((ref.get("target") or {}).get("history") or {}).get("totalCount", 0)
+
+    return {
+        "repos": user["repositories"]["totalCount"],
+        "stars": sum(n["stargazerCount"] for n in nodes),
+        "forks": sum(n["forkCount"] for n in nodes),
+        "followers": user["followers"]["totalCount"],
+        "since": user["createdAt"][:4],
+        "by_repo": {n["name"]: {"stars": n["stargazerCount"], "commits": commits(n)} for n in nodes},
+        "month": dt.datetime.now(dt.timezone.utc).strftime("%b %Y").upper(),
+    }
 
 
-def medium_posts(limit=3):
-    """Latest Medium posts; returns None when the feed cannot be read so the README keeps its list."""
-    request = urllib.request.Request(MEDIUM_FEED, headers={"User-Agent": "Mozilla/5.0 profile-readme-builder"})
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            root = ET.fromstring(response.read())
-    except Exception as error:  # network or feed format problem: keep the existing list
-        print(f"Medium feed skipped: {error}")
-        return None
-    posts = []
-    for item in root.iter("item"):
-        published = dt.datetime.strptime(item.findtext("pubDate"), "%a, %d %b %Y %H:%M:%S %Z")
-        posts.append({"title": item.findtext("title").strip(),
-                      "link": item.findtext("link").split("?")[0],
-                      "date": published.strftime("%b %d, %Y")})
-    return posts[:limit]
+# --- sections ----------------------------------------------------------------
+
+def hero_svg(d):
+    w, h = W, 560
+    defs = (f'<linearGradient id="vfade" x1="0" x2="0" y1="0" y2="1"><stop offset=".6" stop-color="{BG}" '
+            f'stop-opacity="0"/><stop offset="1" stop-color="{BG}" stop-opacity=".9"/></linearGradient>'
+            '<pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1" '
+            'fill="#000" fill-opacity=".18"/></pattern>')
+    p = [svg_open(w, h, f"Hi, I'm Berke Arda Türk. {ROLES[0]}. {MOTTO}", defs), frame(w, h, 240, 140)]
+    # Rune circle watermark.
+    p.append(f'<g class="spin" opacity=".07"><circle cx="330" cy="330" r="190" fill="none" stroke="{ICE}" '
+             f'stroke-width="2"/><circle cx="330" cy="330" r="150" fill="none" stroke="{ICE}" stroke-dasharray="4 10"/>'
+             + "".join(rune(n, 330 + 168 * math.cos(i / 12 * 6.283) - 6,
+                            330 + 168 * math.sin(i / 12 * 6.283) - 12, 24, ICE, 2)
+                       for i, n in enumerate(["algiz", "berkano", "ansuz", "kenaz", "raidho", "sowilo",
+                                              "tiwaz", "ehwaz", "mannaz", "laguz", "dagaz", "othala"]))
+             + "</g>")
+    p.append(sparkles(3, 26, (30, 30, 690, 530)))
+    # Terminal line that types itself.
+    prompt = "mage@vizja:~$ summon --profile"
+    p.append(f'<clipPath id="type"><rect x="52" y="48" width="0" height="26"><animate attributeName="width" '
+             f'from="0" to="{len(prompt) * 8.4 + 4}" begin=".2s" dur="1.6s" fill="freeze"/></rect></clipPath>')
+    p.append(f'<g clip-path="url(#type)"><text x="52" y="66" font-size="14">'
+             f'<tspan fill="{GREEN}" class="b">mage@vizja</tspan><tspan fill="{MUTED}">:~$ </tspan>'
+             f'<tspan fill="{INK}">summon </tspan><tspan fill="{VIOLET}">--profile</tspan></text></g>')
+    p.append(f'<rect x="{52 + len(prompt) * 8.4 + 8}" y="52" width="9" height="18" fill="{GREEN}" class="blink"/>')
+    # Greeting, name and roles.
+    p.append(T(52, 150, "Hi, I'm", 28, INK, "b fu", delay=.9))
+    p.append(f'<g filter="url(#glow)">{T(50, 232, "Berke Arda Türk", 64, "url(#iv)", "x fu", delay=1.2)}</g>')
+    p.append(f'<rect x="52" y="252" width="150" height="4" rx="2" fill="url(#iv)" class="grow" '
+             'style="animation-delay:1.6s"/>')
+    p.append(f'<g class="fu" style="animation-delay:1.9s"><circle cx="62" cy="298" r="9" fill="none" stroke="{ICE}" '
+             f'stroke-width="2"/>{rune("berkano", 58, 291, 14, ICE, 1.6)}</g>')
+    for i, role in enumerate(ROLES):
+        p.append(T(82, 305, role, 20, INK, f"b role role{i}", extra=f' style="animation-delay:{2 + i * 3}s"'))
+    p.append(T(52, 348, "Turning messy real-world data into honest answers,", 16, MUTED, "fu", delay=2.2))
+    p.append(T(52, 372, "one leak-free model at a time.", 16, MUTED, "fu", delay=2.3))
+    # Stat boxes.
+    boxes = [(d["repos"], "REPOS"), (d["stars"], "STARS"), (d["followers"], "FOLLOWERS")]
+    x = 52
+    for i, (value, label) in enumerate(boxes):
+        p.append(f'<g class="fu" style="animation-delay:{2.5 + i * .15}s"><rect x="{x}" y="398" width="112" '
+                 f'height="64" rx="10" fill="{PANEL}" stroke="{LINE}"/>'
+                 + T(x + 14, 430, value, 24, ICE, "x") + T(x + 14, 450, label, 9.5, DIM, "b", ls=1.5) + "</g>")
+        x += 124
+    p.append(f'<g class="fu" style="animation-delay:3s"><rect x="{x}" y="398" width="150" height="64" rx="10" '
+             f'fill="{GREEN}" fill-opacity=".08" stroke="{GREEN}" stroke-opacity=".55"/>'
+             f'<circle cx="{x + 20}" cy="422" r="4.5" fill="{GREEN}" class="pulse"/>'
+             + T(x + 32, 426, "OPEN TO", 11, GREEN, "b", ls=1.5) + T(x + 32, 444, "WORK", 11, GREEN, "b", ls=1.5)
+             + "</g>")
+    p.append(T(52, 506, "MOTTO ·", 11.5, DIM, "b fu", ls=1.5, delay=3.2))
+    p.append(T(130, 506, MOTTO, 11.5, VIOLET, "fu", delay=3.3))
+    # Video frame with the portrait.
+    fx, fy, fw, fh = 704, 40, 524, 480
+    p.append(f'<g class="fi" style="animation-delay:.4s">'
+             + image("portrait.jpg", (fx, fy, fw, fh), (90, 40, 880, 806), cls="kb", radius=10, clip_id="vid")
+             + f'<rect x="{fx}" y="{fy}" width="{fw}" height="{fh}" rx="10" fill="url(#vfade)"/>'
+             + f'<rect x="{fx}" y="{fy}" width="{fw}" height="{fh}" rx="10" fill="url(#scan)"/></g>')
+    for cx, cy, sx, sy in ((fx - 10, fy - 10, 1, 1), (fx + fw + 10, fy - 10, -1, 1),
+                           (fx - 10, fy + fh + 10, 1, -1), (fx + fw + 10, fy + fh + 10, -1, -1)):
+        p.append(f'<path d="M{cx} {cy + 26 * sy}V{cy}H{cx + 26 * sx}" fill="none" stroke="{ICE}" stroke-width="2.5"/>')
+    p.append(star4(fx + fw - 34, fy + 40, 11, ICE, .9, "spin2"))
+    p.append(T(fx + 26, fy + fh - 30, "MAGE.MP4", 11, INK, "b", ls=2.5))
+    p.append(T(fx + fw - 26, fy + fh - 30, "VIZJA · 00:16", 11, MUTED, "b", anchor="end", ls=1.5))
+    p.append(f'<rect x="{fx + 26}" y="{fy + fh - 18}" width="{fw - 52}" height="3" rx="1.5" fill="#ffffff" '
+             f'fill-opacity=".15"/><rect x="{fx + 26}" y="{fy + fh - 18}" width="0" height="3" rx="1.5" '
+             f'fill="url(#iv)"><animate attributeName="width" from="0" to="{fw - 52}" dur="16s" '
+             'repeatCount="indefinite"/></rect>')
+    p.append("</svg>")
+    return "".join(p)
 
 
-# --- assets ------------------------------------------------------------------
-
-def starfield(t, w, h, count, seed, text_box=None):
-    """Seeded scatter of small stars; some twinkle. Stars over the text area are dimmer."""
-    rng = random.Random(seed)
-    parts = []
-    for i in range(count):
-        x, y = rng.uniform(8, w - 8), rng.uniform(8, h - 8)
-        r, opacity = rng.uniform(.5, 1.5), rng.uniform(.25, .85)
-        if text_box and text_box[0] < x < text_box[2] and text_box[1] < y < text_box[3]:
-            opacity *= .4
-        if not t["glow"]:
-            opacity *= .55
-        twinkle = f' class="tw" style="animation-delay:{rng.uniform(0, 3):.1f}s"' if i % 5 == 0 else ""
-        parts.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{r:.2f}" fill="{t["star"]}" '
-                     f'fill-opacity="{opacity:.2f}"{twinkle}/>')
-    return "".join(parts)
-
-
-def rune_circle(cx, cy, t):
-    """Slowly turning ring of the name runes around a small neural network with one lit path."""
-    parts = [f'<circle cx="{cx}" cy="{cy}" r="88" fill="url(#halo)"/>',
-             f'<circle cx="{cx}" cy="{cy}" r="121" fill="none" stroke="{t["signal"]}" stroke-opacity=".2" '
-             f'stroke-dasharray="2 6"/>',
-             f'<circle cx="{cx}" cy="{cy}" r="113" fill="none" stroke="{t["signal"]}" stroke-opacity=".6" '
-             f'stroke-width="1.5"{glow_attr(t)}/>',
-             f'<circle cx="{cx}" cy="{cy}" r="89" fill="none" stroke="{t["signal"]}" stroke-opacity=".45"/>']
-
-    # Ring of runes: the name twice around the circle.
-    slots = NAME_RUNES * 2
-    ring = []
-    size, radius = 12, 101
-    for i, name in enumerate(slots):
-        angle = i * 360 / len(slots)
-        if name is None:
-            glyph = diamond(cx, cy - radius, 2.2, t["signal"], .8)
-        else:
-            glyph = rune(name, cx - .25 * size, cy - radius - size / 2, size, t["signal"], 1.4, .9)
-        ring.append(f'<g transform="rotate({angle:.2f} {cx} {cy})">{glyph}</g>')
-    parts.append(f'<g class="spin" style="transform-origin:{cx}px {cy}px"{glow_attr(t)}>{"".join(ring)}</g>')
-
-    # Neural network inside the circle.
-    layers, lit = (3, 4, 4, 3), (0, 2, 1, 1)
-    xs = [cx - 60 + i * 40 for i in range(len(layers))]
-
-    def node_y(layer, k):
-        n = layers[layer]
-        spread = 36 if n == 3 else 54
-        return cy + spread * (k - (n - 1) / 2) / ((n - 1) / 2)
-
-    edges, lit_edges = [], []
-    for i in range(len(layers) - 1):
-        for a in range(layers[i]):
-            for b in range(layers[i + 1]):
-                line = (xs[i], node_y(i, a), xs[i + 1], node_y(i + 1, b))
-                (lit_edges if (a, b) == (lit[i], lit[i + 1]) else edges).append(line)
-    parts += [f'<line x1="{x1}" y1="{y1:.1f}" x2="{x2}" y2="{y2:.1f}" stroke="{t["axis"]}" stroke-opacity=".5"/>'
-              for x1, y1, x2, y2 in edges]
-    lit_parts = [f'<line x1="{x1}" y1="{y1:.1f}" x2="{x2}" y2="{y2:.1f}" stroke="{t["signal"]}" '
-                 f'stroke-width="2" stroke-dasharray="6 4" class="flow"/>' for x1, y1, x2, y2 in lit_edges]
-    for i, n in enumerate(layers):
-        for k in range(n):
-            on = k == lit[i]
-            node = (f'<circle cx="{xs[i]}" cy="{node_y(i, k):.1f}" r="5.5" '
-                    f'fill="{t["signal"] if on else t["inset"]}" stroke="{t["signal"] if on else t["axis"]}" '
-                    f'stroke-width="1.5"/>')
-            (lit_parts if on else parts).append(node)
-    parts.append(f'<g{glow_attr(t)}>{"".join(lit_parts)}</g>')
-    return "".join(parts)
+def familiar_svg():
+    """Small animated companion under the hero: the face medallion with orbiting runes."""
+    w, h = 260, 150
+    p = [svg_open(w, h, "My familiar: a floating rune medallion")]
+    p.append(f'<ellipse cx="130" cy="138" rx="46" ry="6" fill="{ICE}" fill-opacity=".18" class="pulse"/>')
+    p.append('<g class="bob">')
+    p.append(f'<circle cx="130" cy="66" r="56" fill="none" stroke="{ICE}" stroke-opacity=".35" stroke-dasharray="3 7" '
+             'class="spin2"/>')
+    p.append(image("portrait.jpg", (86, 22, 88, 88), (300, 150, 450, 450), radius=44, clip_id="fam"))
+    p.append(f'<circle cx="130" cy="66" r="44" fill="none" stroke="{ICE}" stroke-width="2" filter="url(#glow)"/>')
+    p.append("</g>")
+    for i, (name, x, y, delay) in enumerate((("algiz", 28, 50, 0), ("kenaz", 216, 36, .8), ("raidho", 222, 96, 1.6),
+                                             ("ansuz", 22, 104, 2.4))):
+        p.append(f'<g class="bob" style="animation-delay:{delay}s" filter="url(#glow)">'
+                 f'{rune(name, x, y, 18, ICE if i % 2 == 0 else VIOLET, 2)}</g>')
+    p.append(sparkles(8, 10, (10, 10, 250, 140)))
+    p.append("</svg>")
+    return "".join(p)
 
 
-def name_in_runes(x, y, t, size=14):
-    """BERKE · ARDA · TURK drawn in runes starting at (x, y)."""
-    parts = []
-    for name in NAME_RUNES[:-1]:
-        if name is None:
-            parts.append(diamond(x + 3, y + size / 2, 2, t["signal"], .7))
-            x += 13
-        else:
-            parts.append(rune(name, x, y, size, t["signal"], 1.4, .85))
-            x += size * .86
-    return f'<g{glow_attr(t)}>{"".join(parts)}</g>'
+def way_svg(d):
+    w, h = W, 520
+    p = [svg_open(w, h, "My mage way: " + ". ".join(f"{a}: {b}" for _, a, b in WAY)), frame(w, h, 260, 260)]
+    p.append(f'<g class="fl">{image("scene-path.jpg", (40, 40, 440, 440), (140, 0, 765, 765), radius=14, clip_id="wayimg")}'
+             f'<rect x="40" y="40" width="440" height="440" rx="14" fill="none" stroke="{ICE}" stroke-opacity=".35"/></g>')
+    x = 530
+    p.append(eyebrow(x, 96, "MY MAGE WAY"))
+    p.append(T(x, 140, "Find the answer, then ship it", 32, INK, "x fu", delay=.35))
+    p.append(T(x, 172, "CS student at Vizja by day, data mage by night.", 14.5, MUTED, "fu", delay=.5))
+    for i, (sigil, title, desc) in enumerate(WAY):
+        y = 204 + i * 68
+        p.append(f'<g class="fu" style="animation-delay:{.7 + i * .2}s">'
+                 f'<rect x="{x}" y="{y}" width="44" height="44" rx="10" fill="{ICE}" fill-opacity=".08" stroke="{ICE}" '
+                 f'stroke-opacity=".35"/>{rune(sigil, x + 15.5, y + 11, 22, ICE, 2)}'
+                 + T(x + 62, y + 19, title, 16, INK, "b") + T(x + 62, y + 39, desc, 12, MUTED) + "</g>")
+    p.append(f'<g class="fu" style="animation-delay:1.4s"><rect x="{x}" y="414" width="{w - 40 - x}" height="66" rx="10" '
+             f'fill="{PANEL2}" stroke="{LINE}"/><rect x="{x}" y="414" width="4" height="66" rx="2" fill="url(#iv)"/>'
+             + T(x + 24, 442, f"“{MOTTO}”", 16, INK, "b")
+             + T(x + 24, 464, f"MOTTO · {d['repos']} REPOS · {d['stars']} STARS · {d['followers']} FOLLOWERS",
+                 10.5, DIM, "b", ls=1.5)
+             + star4(w - 70, 446, 9, VIOLET, .9, "tw") + "</g>")
+    p.append(sparkles(11, 14, (500, 30, 1250, 500)))
+    p.append("</svg>")
+    return "".join(p)
 
 
-def header_svg(t):
-    w, h = 1000, 300
-    arch = (712, 18, 250, 266)
-    gradient, background = sky(t, w, h, .84, 21, text_box=(30, 30, 600, 280), count=90)
-    halo = (f'<radialGradient id="halo"><stop offset="0" stop-color="{t["signal"]}" stop-opacity=".22"/>'
-            f'<stop offset="1" stop-color="{t["signal"]}" stop-opacity="0"/></radialGradient>')
-    ax, ay, aw, ah = arch
-    return "".join([
-        svg_open(w, h, "Berke Arda Türk, data mage in training: machine learning and data science. "
-                       "Takes real datasets to honest answers with a baseline first and validation without leakage."),
-        ANIMATIONS,
-        defs(t, gradient + halo),
-        background,
-        floating_runes([("algiz", 640, 40), ("sowilo", 676, 128), ("othala", 630, 214), ("gebo", 680, 262)], t),
-        f'<ellipse cx="{ax + aw / 2}" cy="{ay + ah / 2}" rx="{aw * .75}" ry="{ah * .62}" fill="url(#halo)"/>',
-        f'<path d="{arch_d(ax - 7, ay - 7, aw + 14, ah + 14)}" fill="none" stroke="{t["signal"]}" '
-        f'stroke-opacity=".35" stroke-dasharray="2 6"/>',
-        framed_art("heroClip", arch_d(*arch), arch, t, crop=CROP_HERO),
-        diamond(ax + aw / 2, ay - 7, 4, t["signal"]),
-        star4(ax - 4, ay + 120, 6, t["signal"], .8),
-        star4(ax + aw + 6, ay + 60, 5, t["signal"], .7),
-        star4(46, 52, 6, t["signal"]),
-        text(60, 57, "DATA MAGE · MACHINE LEARNING · VIZJA UNIVERSITY", 12, t["muted"], MONO, spacing=1.5),
-        text(38, 124, "Berke Arda Türk", 54, t["ink"], SERIF, 600),
-        name_in_runes(42, 142, t),
-        text(40, 204, "Data mage in training. I take real datasets to honest answers:", 17, t["muted"], SERIF,
-             style="italic"),
-        text(40, 228, "a baseline first, no leakage in validation, and only spells that hold.", 17, t["muted"],
-             SERIF, style="italic"),
-        text(40, 266, "berkeardaturk.com · kaggle.com/berketurk · medium.com/@berkeardaturk", 12, t["muted"], MONO),
-        "</svg>",
-    ])
+def spells_svg():
+    w, h = W, 500
+    defs = (f'<radialGradient id="pfade" cx=".5" cy=".42" r=".62"><stop offset=".55" stop-color="#fff"/>'
+            '<stop offset="1" stop-color="#000"/></radialGradient>'
+            '<mask id="pmask"><rect x="20" y="30" width="360" height="450" fill="url(#pfade)"/></mask>'
+            f'<linearGradient id="beam" x1="0" x2="1"><stop offset="0" stop-color="{ICE}" stop-opacity=".55"/>'
+            f'<stop offset="1" stop-color="{VIOLET}" stop-opacity="0"/></linearGradient>')
+    p = [svg_open(w, h, "Spell arsenal, tools I cast with: " + ", ".join(s[0] for s in SPELLS), defs),
+         frame(w, h, 260, 280)]
+    # The portrait's rune circle sits at about (785, 610) in source pixels; the crop maps it to (270, 283).
+    p.append(f'<polygon points="270,283 1250,120 1250,470" fill="url(#beam)" class="pulse"/>')
+    p.append(f'<g class="fl">{image("portrait.jpg", (20, 30, 360, 450), (200, 40, 820, 1025), radius=0, clip_id="spimg", mask="pmask")}</g>')
+    p.append(f'<circle cx="270" cy="283" r="16" fill="{ICE}" fill-opacity=".5" filter="url(#glow2)" class="pulse"/>')
+    p.append(eyebrow(400, 74, "SPELL ARSENAL"))
+    p.append(T(400, 116, "Tools I cast with", 32, INK, "x fu", delay=.35))
+    p.append(T(w - 40, 74, f"{len(SPELLS)} SPELLS LEARNED", 11, DIM, "b fu", anchor="end", ls=2, delay=.4))
+    tw, th, gap = 158, 52, 10
+    for i, (label, key, color) in enumerate(SPELLS):
+        r, c = divmod(i, 5)
+        x, y = 400 + c * (tw + gap), 160 + r * 92
+        p.append(f'<g class="fu" style="animation-delay:{.6 + i * .06:.2f}s">'
+                 f'<rect x="{x}" y="{y}" width="{tw}" height="{th}" rx="10" fill="{color}" fill-opacity=".10" '
+                 f'stroke="{color}" stroke-opacity=".5"/>{icon(key, x + 16, y + 15, 22, color)}'
+                 + T(x + 48, y + 31, label, 13, INK, "b") + "</g>")
+    p.append(sparkles(21, 16, (390, 130, 1250, 480)))
+    p.append("</svg>")
+    return "".join(p)
 
 
-def path_svg(t):
-    """The Mage's Path: what I work on, beside a painting (scene or the rune circle from the portrait)."""
-    w, h = 1000, 350
-    arch = (36, 34, 240, 282)
-    gradient, background = sky(t, w, h, .15, 5, text_box=(300, 20, 980, 330), count=60)
-    parts = [svg_open(w, h, "The Mage's Path: " + ". ".join(f"{a}: {b}" for _, a, b in PATH_ITEMS)),
-             ANIMATIONS, defs(t, gradient), background,
-             framed_art("pathClip", arch_d(*arch), arch, t, scene=SCENE_PATH, crop=CROP_SIGIL),
-             diamond(arch[0] + arch[2] / 2, arch[1] - 6, 4, t["signal"]),
-             star4(322, 50, 6, t["signal"]),
-             text(336, 55, "THE MAGE'S PATH", 12, t["muted"], MONO, spacing=1.5),
-             text(320, 96, "Find the honest answer, then ship it", 30, t["ink"], SERIF, 600)]
-    for i, (sigil, title, desc) in enumerate(PATH_ITEMS):
-        y = 118 + i * 72
-        parts.append(f'<rect x="320.5" y="{y + .5}" width="643" height="62" rx="6" fill="{t["inset"]}" '
-                     f'fill-opacity=".75" stroke="{t["line"]}"/>')
-        parts.append(rune(sigil, 338, y + 14, 20, t["signal"], 1.8, extra=glow_attr(t)))
-        parts.append(text(372, y + 25, title, 16, t["ink"], SERIF, 600))
-        for k, line in enumerate(wrap(desc, 96)[:2]):
-            parts.append(text(372, y + 43 + k * 15, line, 12.5, t["muted"]))
-    parts.append("</svg>")
-    return "".join(parts)
+def id_svg(d):
+    w, h = W, 620
+    defs = (f'<linearGradient id="card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2540"/>'
+            f'<stop offset="1" stop-color="#0e1422"/></linearGradient>'
+            f'<linearGradient id="strap" x1="0" x2="1"><stop offset="0" stop-color="{ICE2}"/>'
+            f'<stop offset="1" stop-color="#1d4ed8"/></linearGradient>')
+    p = [svg_open(w, h, f"Mage registration card for Berke Arda Türk and a live dashboard: {d['repos']} public repos, "
+                        f"{d['stars']} stars, {d['forks']} forks, {d['followers']} followers", defs),
+         frame(w, h, 200, 320)]
+    # Lanyard and card, swinging gently from the top.
+    p.append('<g style="animation:sw 6s ease-in-out infinite;transform-origin:200px 0px">'
+             "<style>@keyframes sw{0%,100%{transform:rotate(-1.4deg)}50%{transform:rotate(1.4deg)}}</style>")
+    p.append(f'<rect x="186" y="0" width="28" height="112" fill="url(#strap)"/>')
+    p.append(T(205, 10, "VIZJA · DATA MAGE · VIZJA", 9, "#ffffff", "b", ls=2, opacity=.8,
+               extra=' transform="rotate(90 205 10)"'))
+    p.append(f'<rect x="178" y="104" width="44" height="24" rx="6" fill="#9aa4b2"/><rect x="192" y="122" width="16" '
+             f'height="16" rx="3" fill="none" stroke="#9aa4b2" stroke-width="3"/>')
+    cx0, cy0, cw, ch = 40, 136, 320, 456
+    p.append(f'<rect x="{cx0}" y="{cy0}" width="{cw}" height="{ch}" rx="18" fill="url(#card)" stroke="{ICE}" '
+             f'stroke-opacity=".4" stroke-width="1.5"/>')
+    p.append(f'<rect x="185" y="{cy0 + 10}" width="30" height="6" rx="3" fill="{BG}"/>')
+    p.append(T(cx0 + 20, cy0 + 40, "◆ MAGE REGISTRATION", 10.5, ICE, "b", ls=1.5))
+    p.append(T(cx0 + cw - 20, cy0 + 40, "No. 0021", 10.5, DIM, "b", anchor="end"))
+    p.append(image("portrait.jpg", (110, cy0 + 58, 180, 180), (300, 150, 450, 450), radius=16, clip_id="idface"))
+    p.append(f'<rect x="110" y="{cy0 + 58}" width="180" height="180" rx="16" fill="none" stroke="{ICE}" stroke-width="2"/>')
+    p.append(f'<g transform="rotate(-14 300 {cy0 + 84})"><circle cx="300" cy="{cy0 + 84}" r="30" fill="{BG}" '
+             f'fill-opacity=".6" stroke="{VIOLET}" stroke-width="2" stroke-dasharray="3 3"/>'
+             + T(300, cy0 + 80, "LVL", 9, VIOLET, "b", anchor="middle", ls=1.5)
+             + T(300, cy0 + 98, "6", 18, VIOLET, "x", anchor="middle") + "</g>")
+    p.append(T(200, cy0 + 270, "Berke Arda Türk", 21, INK, "x", anchor="middle"))
+    p.append(T(200, cy0 + 290, "DATA MAGE · APPRENTICE", 10, ICE, "b", anchor="middle", ls=2))
+    fields = [("TOWER", "Vizja Univ."), ("SCHOOL", "AI & Data Sci."), ("SINCE", d["since"]), ("SEMESTER", "6th")]
+    for i, (label, value) in enumerate(fields):
+        fx = cx0 + 24 + (i % 2) * 150
+        fy = cy0 + 322 + (i // 2) * 40
+        p.append(T(fx, fy, label, 8.5, DIM, "b", ls=1.5) + T(fx, fy + 17, value, 12, INK, "b"))
+    rng = random.Random(21)
+    x = cx0 + 24
+    bars = []
+    while x < cx0 + 196:
+        bw = rng.choice((1, 1, 2, 3))
+        bars.append(f'<rect x="{x}" y="{cy0 + 396}" width="{bw}" height="24" fill="{INK}" fill-opacity=".75"/>')
+        x += bw + rng.choice((1, 2, 2, 3))
+    p.append("".join(bars))
+    p.append(f'<circle cx="{cx0 + 28}" cy="{cy0 + 438}" r="4" fill="{GREEN}" class="pulse"/>')
+    p.append(T(cx0 + 38, cy0 + 442, "ACTIVE QUEST", 9.5, GREEN, "b", ls=1.5))
+    p.append(T(cx0 + cw - 20, cy0 + 442, f"@{USER}", 9.5, DIM, "b", anchor="end"))
+    p.append("</g>")
+    # Dashboard.
+    x = 420
+    p.append(eyebrow(x, 84, "QUEST DASHBOARD"))
+    p.append(T(x, 126, "Stats from the tower", 32, INK, "x fu", delay=.35))
+    p.append(f'<g class="fu" style="animation-delay:.5s"><rect x="{w - 40 - 168}" y="66" width="168" height="28" rx="14" '
+             f'fill="{GREEN}" fill-opacity=".1" stroke="{GREEN}" stroke-opacity=".6"/>'
+             f'<circle cx="{w - 40 - 150}" cy="80" r="4" fill="{GREEN}" class="pulse"/>'
+             + T(w - 40 - 138, 84, f"LIVE · {d['month']}", 10.5, GREEN, "b", ls=1.5) + "</g>")
+    tiles = [(d["repos"], "PUBLIC REPOS", ICE, "repo"), (d["stars"], "STARS EARNED", GOLD, "star"),
+             (d["forks"], "FORKS", VIOLET, "fork"), (d["followers"], "FOLLOWERS", GREEN, "person")]
+    tw = (w - 40 - x - 3 * 16) / 4
+    for i, (value, label, color, ic) in enumerate(tiles):
+        tx = x + i * (tw + 16)
+        p.append(f'<g class="fu" style="animation-delay:{.6 + i * .12:.2f}s">'
+                 f'<rect x="{tx:.1f}" y="152" width="{tw:.1f}" height="96" rx="12" fill="{PANEL}" stroke="{LINE}"/>'
+                 f'<rect x="{tx + 18:.1f}" y="168" width="24" height="3" rx="1.5" fill="{color}"/>'
+                 f'<path d="{OCT[ic]}" transform="translate({tx + tw - 38:.1f} 166) scale(1.15)" fill="{color}"/>'
+                 + T(round(tx + 18, 1), 216, value, 32, INK, "x") + T(round(tx + 18, 1), 236, label, 9.5, DIM, "b", ls=1.5)
+                 + "</g>")
+    # Commits per featured repo.
+    px, py, pw, ph = x, 268, 500, 312
+    p.append(f'<g class="fu" style="animation-delay:1.1s"><rect x="{px}" y="{py}" width="{pw}" height="{ph}" rx="12" '
+             f'fill="{PANEL}" stroke="{LINE}"/>' + T(px + 22, py + 32, "TOP QUESTS · COMMITS", 10.5, DIM, "b", ls=1.5))
+    rows = [(title, d["by_repo"].get(repo, {}).get("commits", 0)) for repo, title, _, _ in FEATURED]
+    top = max([c for _, c in rows] + [1])
+    for i, (title, commits) in enumerate(rows):
+        y = py + 66 + i * 38
+        bw = 220 * commits / top
+        p.append(T(px + 22, y + 4, title[:20], 11.5, MUTED, "b"))
+        p.append(f'<rect x="{px + 196}" y="{y - 5}" width="220" height="9" rx="4.5" fill="#ffffff" fill-opacity=".06"/>')
+        if bw:
+            p.append(f'<rect x="{px + 196}" y="{y - 5}" width="{bw:.1f}" height="9" rx="4.5" fill="url(#iv)" class="grow" '
+                     f'style="animation-delay:{1.3 + i * .1:.1f}s"/>')
+        p.append(T(px + 430, y + 4, commits, 11.5, INK, "b"))
+    p.append(T(px + 22, py + ph - 20, "live from the GitHub API · rebuilt every day", 9.5, DIM, extra=' font-style="italic"'))
+    p.append("</g>")
+    # Mana nature.
+    mx, mw = px + pw + 16, w - 40 - (px + pw + 16)
+    p.append(f'<g class="fu" style="animation-delay:1.3s"><rect x="{mx}" y="{py}" width="{mw}" height="{ph}" rx="12" '
+             f'fill="{PANEL}" stroke="{LINE}"/>' + T(mx + 22, py + 32, "MANA NATURE", 10.5, DIM, "b", ls=1.5))
+    for i, (color, label, value, sub) in enumerate(MANA):
+        y = py + 72 + i * 80
+        p.append(f'<circle cx="{mx + 26}" cy="{y - 4}" r="4" fill="{color}"/>'
+                 + T(mx + 38, y, label, 10.5, color, "b", ls=1.5)
+                 + T(mx + 22, y + 24, value, 14, INK, "b") + T(mx + 22, y + 44, sub, 10.5, MUTED))
+    p.append("</g>")
+    p.append(sparkles(31, 12, (400, 40, 1250, 600)))
+    p.append("</svg>")
+    return "".join(p)
 
 
-def guild_svg(t):
-    """Guild member card with the portrait medallion, plus a static quest log of real milestones."""
-    w, h = 1000, 340
-    gradient, background = sky(t, w, h, .3, 9, count=55)
-    cx_, cy_, r = 128, 178, 68
-    parts = [svg_open(w, h, "Guild card. " + ". ".join(f"{k.title()}: {v}" for k, v in GUILD_FIELDS)
-                      + ". Quest log: " + ". ".join(f"{d}: {e}" for d, e in QUEST_LOG)),
-             ANIMATIONS, defs(t, gradient), background]
-    # Card.
-    cx0, cy0, cw, ch = 30, 30, 540, 280
-    parts.append(f'<g transform="translate({cx0} {cy0})">{framed_panel(cw, ch, t)}</g>')
-    parts.append(f'<rect x="{cx0 + 7}" y="{cy0 + 7}" width="{cw - 14}" height="34" fill="{t["signal"]}" '
-                 f'fill-opacity=".1"/>')
-    parts.append(rune("berkano", cx0 + 22, cy0 + 15, 18, t["signal"], 1.6, extra=glow_attr(t)))
-    parts.append(text(cx0 + 44, cy0 + 29, "GUILD OF DATA MAGES · MEMBER CARD", 12, t["ink"], MONO, 600, spacing=1.5))
-    parts.append(text(cx0 + cw - 22, cy0 + 29, "No. 0021", 12, t["muted"], MONO, anchor="end"))
-    # Medallion.
-    parts.append(f'<circle cx="{cx_}" cy="{cy_}" r="{r + 9}" fill="none" stroke="{t["signal"]}" '
-                 f'stroke-opacity=".35" stroke-dasharray="2 5"/>')
-    parts.append(framed_art("faceClip", circle_d(cx_, cy_, r), (cx_ - r, cy_ - r, 2 * r, 2 * r), t, crop=CROP_FACE))
-    for angle in (0, 90, 180, 270):
-        a = math.radians(angle)
-        parts.append(diamond(round(cx_ + (r + 9) * math.cos(a), 1), round(cy_ + (r + 9) * math.sin(a), 1),
-                             3.2, t["signal"]))
-    # Fields.
-    for i, (label, value) in enumerate(GUILD_FIELDS):
-        y = cy0 + 70 + i * 40
-        parts.append(text(232, y, label, 10, t["muted"], MONO, spacing=1.5))
-        parts.append(text(232, y + 19, value, 15.5, t["signal"] if label == "CURRENT QUEST" else t["ink"],
-                          SERIF, 600))
-    parts.append(name_in_runes(cx_ - 64, cy0 + ch - 34, t, 11))
-    # Quest log.
-    lx = 618
-    parts.append(star4(lx + 2, 52, 6, t["signal"]))
-    parts.append(text(lx + 16, 57, "QUEST LOG", 12, t["muted"], MONO, spacing=1.5))
-    top = 84
-    parts.append(f'<line x1="{lx + 2}" y1="{top}" x2="{lx + 2}" y2="{top + (len(QUEST_LOG) - 1) * 50}" '
-                 f'stroke="{t["signal"]}" stroke-opacity=".35"/>')
-    for i, (date, entry) in enumerate(QUEST_LOG):
-        y = top + i * 50
-        parts.append(diamond(lx + 2, y, 5, t["signal"] if i == 0 else t["axis"]))
-        parts.append(text(lx + 20, y + 4, date.upper(), 10.5, t["signal"], MONO, 600, spacing=1))
-        parts.append(text(lx + 20, y + 23, entry, 14, t["ink"], SERIF))
-    parts.append("</svg>")
-    return "".join(parts)
+def connect_svg():
+    w, h = W, 440
+    p = [svg_open(w, h, "Let's connect: " + ", ".join(f"{label} {handle}" for _, _, label, handle in CONTACTS)),
+         frame(w, h, 300, 220, VIOLET)]
+    p.append(f'<g class="fl">{image("scene-raven.jpg", (40, 40, 520, 360), (40, 0, 1024, 680), radius=14, clip_id="rav")}'
+             f'<rect x="40" y="40" width="520" height="360" rx="14" fill="none" stroke="{VIOLET}" stroke-opacity=".4"/></g>')
+    x = 604
+    p.append(eyebrow(x, 96, "JOIN THE GUILD", VIOLET))
+    p.append(T(x, 138, "Let's build something honest", 30, INK, "x fu", delay=.35))
+    tw, th = (w - 40 - x - 16) / 2, 74
+    for i, (key, color, label, handle) in enumerate(CONTACTS):
+        tx, ty = x + (i % 2) * (tw + 16), 168 + (i // 2) * (th + 14)
+        p.append(f'<g class="fu" style="animation-delay:{.6 + i * .15:.2f}s">'
+                 f'<rect x="{tx:.1f}" y="{ty}" width="{tw:.1f}" height="{th}" rx="12" fill="{PANEL}" stroke="{LINE}"/>'
+                 f'<rect x="{tx + 16:.1f}" y="{ty + 15}" width="44" height="44" rx="10" fill="{color}" '
+                 f'fill-opacity=".14"/>{icon(key, round(tx + 27, 1), ty + 26, 22, color)}'
+                 + T(round(tx + 76, 1), ty + 33, label, 14, INK, "b") + T(round(tx + 76, 1), ty + 53, handle, 11, MUTED)
+                 + "</g>")
+    p.append(f'<circle cx="{x + 5}" cy="370" r="4" fill="{GREEN}" class="pulse"/>')
+    p.append(T(x + 18, 374, "Open to internships, collaborations and data roles", 11.5, MUTED, "fu", delay=1.4))
+    p.append(sparkles(41, 14, (580, 30, 1250, 410), (VIOLET, ICE, "#ffffff")))
+    p.append("</svg>")
+    return "".join(p)
 
 
-def raven_svg(t):
-    """Send a raven: closing call to action with a painting (scene or the rune circle)."""
-    w, h = 1000, 280
-    gradient, background = sky(t, w, h, .83, 33, text_box=(30, 30, 640, 250), count=70)
-    halo = (f'<radialGradient id="halo"><stop offset="0" stop-color="{t["signal"]}" stop-opacity=".16"/>'
-            f'<stop offset="1" stop-color="{t["signal"]}" stop-opacity="0"/></radialGradient>')
-    scene = art_href(SCENE_RAVEN) is not None
-    box = (712, 18, 250, 244)
-    art = (f'<ellipse cx="837" cy="140" rx="190" ry="150" fill="url(#halo)"/>'
-           f'<path d="{arch_d(box[0] - 7, box[1] - 7, box[2] + 14, box[3] + 14)}" fill="none" '
-           f'stroke="{t["signal"]}" stroke-opacity=".35" stroke-dasharray="2 6"/>'
-           + framed_art("ravenClip", arch_d(*box), box, t, scene=SCENE_RAVEN)
-           + diamond(box[0] + box[2] / 2, box[1] - 7, 4, t["signal"])
-           if scene else rune_circle(830, 140, t))
-    return "".join([
-        svg_open(w, h, "Send a raven: open to machine learning and data roles, and to collaboration "
-                       "on data science projects."),
-        ANIMATIONS, defs(t, gradient + halo), background,
-        floating_runes([("ansuz", 650, 40), ("gebo", 672, 210)], t),
-        art,
-        star4(46, 62, 6, t["signal"]),
-        text(60, 67, "SEND A RAVEN", 12, t["muted"], MONO, spacing=1.5),
-        text(40, 124, "Let's build something honest", 38, t["ink"], SERIF, 600),
-        text(40, 166, "Open to machine learning and data roles, and to collaboration", 17, t["muted"], SERIF,
-             style="italic"),
-        text(40, 190, "on data science projects. The links below reach me fastest.", 17, t["muted"], SERIF,
-             style="italic"),
-        name_in_runes(42, 226, t, 12),
-        "</svg>",
-    ])
+def orb_svg():
+    """Small spinning rune orb between the quest table and the contribution realm."""
+    w = h = 150
+    p = [svg_open(w, h, "A spinning rune orb")]
+    p.append(f'<circle cx="75" cy="75" r="30" fill="{ICE}" fill-opacity=".35" filter="url(#glow2)" class="pulse"/>')
+    p.append(f'<circle cx="75" cy="75" r="16" fill="#ffffff" fill-opacity=".85" filter="url(#glow)"/>')
+    ring = "".join(rune(n, 75 + 52 * math.cos(i / 8 * 6.283) - 4,
+                        75 + 52 * math.sin(i / 8 * 6.283) - 8, 16, ICE, 1.8)
+                   for i, n in enumerate(["berkano", "algiz", "kenaz", "ansuz", "raidho", "sowilo", "tiwaz", "dagaz"]))
+    p.append(f'<g class="spin2" filter="url(#glow)"><circle cx="75" cy="75" r="62" fill="none" stroke="{ICE}" '
+             f'stroke-opacity=".55" stroke-width="1.5"/><circle cx="75" cy="75" r="42" fill="none" stroke="{VIOLET}" '
+             f'stroke-opacity=".5" stroke-dasharray="3 6"/>{ring}</g>')
+    p.append(sparkles(51, 8, (5, 5, 145, 145)))
+    p.append("</svg>")
+    return "".join(p)
 
 
-def sky_panel(t, w, h, seed, count, cx_ratio=.2, text_box=None):
-    """Framed panel on the night sky (or parchment) gradient with a light starfield."""
-    gradient = (f'<radialGradient id="sky" cx="{cx_ratio:.2f}" cy=".3" r=".9">'
-                f'<stop offset="0" stop-color="{t["sky_center"]}"/><stop offset="1" stop-color="{t["sky_edge"]}"/>'
-                f'</radialGradient>')
-    return gradient, framed_panel(w, h, t, fill="url(#sky)") + starfield(t, w, h, count, seed, text_box)
+def sigil_svg():
+    """Tiny pulsing seal at the very end, with the B rune."""
+    w = h = 90
+    p = [svg_open(w, h, "A glowing B rune seal")]
+    p.append(f'<g class="bob"><circle cx="45" cy="42" r="26" fill="{PANEL}" stroke="{ICE}" stroke-width="2" '
+             f'filter="url(#glow)"/>{rune("berkano", 37, 26, 32, ICE, 2.4)}</g>')
+    p.append(f'<ellipse cx="45" cy="82" rx="20" ry="4" fill="{ICE}" fill-opacity=".2" class="pulse"/>')
+    p.append("</svg>")
+    return "".join(p)
 
 
-SECTIONS = {
-    "about": ("ehwaz", "About", "THE APPRENTICE"),
-    "quests": ("raidho", "Featured work", "QUESTS COMPLETED AND UNDER WAY"),
-    "spellbook": ("ansuz", "Spellbook", "TOOLS I CAST WITH"),
-    "chronicles": ("berkano", "Chronicles", "LATEST WRITING ON MEDIUM"),
-}
+def quests_block(d):
+    rows = []
+    for repo, title, what, tags in FEATURED:
+        stars = d["by_repo"].get(repo, {}).get("stars", 0)
+        code = " ".join(f"<code>{escape(t)}</code>" for t in tags)
+        rows.append(f'<tr><td><a href="https://github.com/{USER}/{repo}"><b>{escape(title)}</b></a></td>'
+                    f"<td>{escape(what)}</td><td>{code}</td><td align=\"center\"><b>{stars}</b></td></tr>")
+    return ("<table>\n<tr><th>Quest</th><th>What it is</th><th>Spells used</th><th align=\"center\">⭐</th></tr>\n"
+            + "\n".join(rows) + "\n</table>\n\n<div align=\"center\">\n\n"
+            f'<a href="https://github.com/{USER}?tab=repositories"><b>→ See all {d["repos"]} repositories</b></a>')
 
 
-def section_svg(key, t):
-    """Section title banner, so headings share the theme instead of plain markdown headings."""
-    sigil, title, eyebrow = SECTIONS[key]
-    w, h = 1000, 72
-    gradient, panel = sky_panel(t, w, h, len(title) * 7, 22, cx_ratio=.1)
-    return "".join([
-        svg_open(w, h, title), ANIMATIONS, defs(t, gradient), panel,
-        rune(sigil, 30, 22, 28, t["signal"], 2, extra=glow_attr(t)),
-        text(64, 46, title, 27, t["ink"], SERIF, 600),
-        star4(w - 30 - len(eyebrow) * 8.6 - 16, 37, 5, t["signal"]),
-        text(w - 30, 41, eyebrow, 11.5, t["muted"], MONO, anchor="end", spacing=1.5),
-        "</svg>",
-    ])
-
-
-LINKS = [
-    ("website", "Website", "othala", "https://berkeardaturk.com"),          # home
-    ("linkedin", "LinkedIn", "mannaz", "https://www.linkedin.com/in/berke-arda-turk/"),  # people
-    ("kaggle", "Kaggle", "tiwaz", "https://www.kaggle.com/berketurk"),      # contest
-    ("medium", "Medium", "ansuz", "https://medium.com/@berkeardaturk"),     # words
-    ("email", "Email", "raidho", "mailto:turkberkearda@gmail.com"),         # message
-]
-
-
-def link_svg(index, t):
-    """One link button of a row that spans exactly the 1000-wide grid with even 8px gaps.
-
-    Each button image is 200 wide (20% of the row); the panel inside is shifted so the
-    first and last buttons meet the outer edges of the other sections.
-    """
-    _, label, sigil, _ = LINKS[index]
-    n, gap, w, h = len(LINKS), 8, 200, 54
-    pw = (1000 - gap * (n - 1)) / n
-    x0 = index * (pw + gap) - index * w
-    gradient, panel = sky_panel(t, pw, h - 4, 50 + index, 8, cx_ratio=.3)
-    # Fixed slots (rune left, label centered, arrow right) so no text width guessing is needed.
-    return "".join([
-        svg_open(w, h, label), ANIMATIONS, defs(t, gradient),
-        f'<g transform="translate({x0:.2f} 0)">{panel}',
-        rune(sigil, 20, 16, 18, t["signal"], 1.7, extra=glow_attr(t)),
-        text(round(pw / 2 + 4, 1), 31, label, 16, t["ink"], SERIF, 600, anchor="middle"),
-        text(round(pw - 18, 1), 31, "→", 14, t["signal"], SANS, anchor="end"),
-        "</g></svg>",
-    ])
-
-
-def archive_svg(t):
-    """Full-width bar that links to all repositories."""
-    w, h = 1000, 58
-    gradient, panel = sky_panel(t, w, h, 61, 20, cx_ratio=.5)
-    return "".join([
-        svg_open(w, h, "All repositories"), ANIMATIONS, defs(t, gradient), panel,
-        diamond(330, 29, 3.5, t["signal"], .8),
-        diamond(670, 29, 3.5, t["signal"], .8),
-        rune("othala", 384, 19, 20, t["signal"], 1.7, extra=glow_attr(t)),
-        text(500, 35, "Open the full archive", 17, t["ink"], SERIF, 600, anchor="middle"),
-        text(612, 35, "→", 15, t["signal"], SANS),
-        "</svg>",
-    ])
-
-
-def about_svg(t):
-    """About text on the same night sky panel as the other sections (markdown text cannot have a background)."""
-    lines = wrap(ABOUT_TEXT, 118)
-    w = 1000
-    top = 44
-    points_top = top + len(lines) * 25 + 22
-    h = points_top + len(ABOUT_POINTS) * 34 + 18
-    label = ABOUT_TEXT + " " + " ".join(f"{a} {b}" for _, a, b in ABOUT_POINTS)
-    gradient, panel = sky_panel(t, w, h, 77, 45, cx_ratio=.1, text_box=(20, 20, 980, h - 20))
-    parts = [svg_open(w, h, label), ANIMATIONS, defs(t, gradient), panel]
-    for i, line in enumerate(lines):
-        parts.append(text(36, top + i * 25, line, 15.5, t["ink"]))
-    parts.append(f'<line x1="36" y1="{points_top - 14}" x2="{w - 36}" y2="{points_top - 14}" '
-                 f'stroke="{t["line"]}" stroke-dasharray="2 5"/>')
-    for i, (sigil, label_text, rest) in enumerate(ABOUT_POINTS):
-        y = points_top + i * 34
-        parts.append(rune(sigil, 38, y - 2, 18, t["signal"], 1.7, extra=glow_attr(t)))
-        parts.append(text(64, y + 13, label_text, 15.5, t["signal"], SERIF, 600))
-        parts.append(text(64 + len(label_text) * 7.6 + 8, y + 13, rest, 15, t["muted"]))
-    parts.append("</svg>")
-    return "".join(parts)
-
-
-def chronicle_svg(post, index, t):
-    """One Medium post as a themed card; the README wraps it in a link."""
-    w, h = 1000, 76
-    title = post["title"] if len(post["title"]) <= 92 else post["title"][:89].rstrip() + "..."
-    gradient, panel = sky_panel(t, w, h, 40 + index, 16, cx_ratio=.05)
-    return "".join([
-        svg_open(w, h, f'{post["title"]}, {post["date"]}'), ANIMATIONS, defs(t, gradient), panel,
-        f'<circle cx="44" cy="38" r="17" fill="none" stroke="{t["signal"]}" stroke-opacity=".6"{glow_attr(t)}/>',
-        text(44, 44, ("I", "II", "III", "IV", "V")[index], 14, t["signal"], SERIF, 600, anchor="middle"),
-        text(78, 35, title, 16.5, t["ink"], SERIF, 600),
-        text(78, 56, f'{post["date"]} · Medium · read the chronicle →', 11.5, t["muted"], MONO),
-        "</svg>",
-    ])
-
-
-def card_svg(project, repo, t, side=0):
-    """Project card in a 500-wide half of the 1000-wide grid.
-
-    Two cards side by side at 50% each fill exactly the width of the other sections; the 8px
-    gutter lives inside the SVGs (right edge of left cards, left edge of right cards).
-    """
-    outer_w, outer_h, gutter = 500, 188, 8
-    w, h = outer_w - gutter, 180
-    dx = 0 if side == 0 else gutter
-    gradient, panel = sky_panel(t, w, h, len(project["repo"]), 16)
-    parts = [svg_open(outer_w, outer_h, f'{project["title"]}: {project["metric"]}. {project["desc"]}'),
-             ANIMATIONS,
-             defs(t, gradient),
-             f'<g transform="translate({dx} 0)">',
-             panel,
-             rune(project["rune"], 22, 19, 18, t["signal"], 1.8, extra=glow_attr(t)),
-             text(44, 35, project["title"], 17, t["ink"], SERIF, 600)]
-    stars = repo.get("stargazerCount", 0)
-    star_x = w - 22 - len(str(stars)) * 7.5 - 19
-    parts.append(f'<path d="{STAR_PATH}" transform="translate({star_x:.1f} 23) scale(.9)" fill="{t["muted"]}"/>')
-    parts.append(text(w - 22, 35, stars, 12.5, t["muted"], MONO, anchor="end"))
-    for i, line in enumerate(wrap(project["desc"], 66)[:3]):
-        parts.append(text(22, 64 + i * 19, line, 12.5, t["muted"]))
-    parts.append(star4(27, 132, 5, t["signal"]))
-    parts.append(text(38, 136, project["metric"], 12.5, t["signal"], MONO, 600))
-    language = repo.get("primaryLanguage") or {"name": "Python", "color": "#3572A5"}
-    parts.append(f'<circle cx="28" cy="158" r="5" fill="{language["color"]}"/>')
-    parts.append(text(39, 162, language["name"], 11.5, t["muted"]))
-    x = 39 + len(language["name"]) * 6.4 + 14
-    for tag in project["tags"]:
-        svg, width = chip(x, 147, tag, t, 10)
-        parts.append(svg)
-        x += width + 6
-    parts.append("</g></svg>")
-    return "".join(parts)
-
-
-def toolkit_svg(t):
-    w, row_h = 1000, 46
-    h = 44 + len(TOOLKIT) * row_h
-    label = "Toolkit: " + ". ".join(f"{k}: {', '.join(v)}" for k, _, v in TOOLKIT)
-    gradient, panel = sky_panel(t, w, h, 3, 40, cx_ratio=.1)
-    parts = [svg_open(w, h, label), ANIMATIONS, defs(t, gradient), panel]
-    for r, (name, sigil, items) in enumerate(TOOLKIT):
-        y = 32 + r * row_h
-        parts.append(rune(sigil, 34, y + 3, 17, t["signal"], 1.6, extra=glow_attr(t)))
-        parts.append(text(58, y + 17, name.upper(), 12.5, t["ink"], SERIF, 600, spacing=1.5))
-        x = 270
-        for item in items:
-            svg, width = chip(x, y, item, t, 12.5)
-            parts.append(svg)
-            x += width + 9
-    parts.append("</svg>")
-    return "".join(parts)
-
-
-def divider_svg(t):
-    """Ornamental rule with a small rune seal in the middle."""
-    w, h, cx, cy = 1000, 44, 500, 22
-    fade = (f'<linearGradient id="fadeL" x1="0" x2="1"><stop offset="0" stop-color="{t["signal"]}" stop-opacity="0"/>'
-            f'<stop offset="1" stop-color="{t["signal"]}" stop-opacity=".6"/></linearGradient>'
-            f'<linearGradient id="fadeR" x1="1" x2="0"><stop offset="0" stop-color="{t["signal"]}" stop-opacity="0"/>'
-            f'<stop offset="1" stop-color="{t["signal"]}" stop-opacity=".6"/></linearGradient>')
-    return "".join([
-        svg_open(w, h, "Divider"),
-        defs(t, fade),
-        f'<rect x="60" y="{cy - .5}" width="{cx - 60 - 34}" height="1" fill="url(#fadeL)"/>',
-        f'<rect x="{cx + 34}" y="{cy - .5}" width="{w - 60 - cx - 34}" height="1" fill="url(#fadeR)"/>',
-        diamond(cx - 26, cy, 3, t["signal"], .8),
-        diamond(cx + 26, cy, 3, t["signal"], .8),
-        f'<g{glow_attr(t)}><circle cx="{cx}" cy="{cy}" r="15" fill="none" stroke="{t["signal"]}" stroke-opacity=".7"/>',
-        rune("berkano", cx - 4, cy - 8, 16, t["signal"], 1.6),
-        "</g></svg>",
-    ])
-
-
-def update_writing(posts):
-    """Write one themed card per Medium post and point the README's writing block at them."""
-    for i, post in enumerate(posts):
-        write_pair(f"chronicle-{i + 1}", lambda t, p=post, k=i: chronicle_svg(p, k, t))
+def update_readme(d):
     readme = ROOT / "README.md"
     content = readme.read_text(encoding="utf-8")
-    lines = "\n".join(
-        f'<a href="{escape(p["link"])}"><picture><source media="(prefers-color-scheme: dark)" '
-        f'srcset="./assets/chronicle-{i + 1}-dark.svg?v={CACHE_VERSION}"><img alt="{escape(p["title"])}, {p["date"]}" '
-        f'src="./assets/chronicle-{i + 1}-light.svg?v={CACHE_VERSION}" width="100%"></picture></a>'
-        for i, p in enumerate(posts))
-    block = f"<!-- WRITING:START -->\n{lines}\n<!-- WRITING:END -->"
-    content = re.sub(r"<!-- WRITING:START -->.*?<!-- WRITING:END -->", lambda _: block, content, flags=re.S)
-    readme.write_text(content, encoding="utf-8")
+    block = f"<!-- QUESTS:START -->\n{quests_block(d)}\n<!-- QUESTS:END -->"
+    content = re.sub(r"<!-- QUESTS:START -->.*?<!-- QUESTS:END -->", lambda _: block, content, flags=re.S)
+    readme.write_text(content, encoding="utf-8", newline="\n")
 
 
 def main():
-    user = github_data()
-    repos = {r["name"]: r for r in user["repositories"]["nodes"]}
-    write_pair("header", header_svg)
-    write_pair("path", path_svg)
-    write_pair("guild", guild_svg)
-    write_pair("raven", raven_svg)
-    for i, project in enumerate(FEATURED):
-        write_pair(f'card-{project["repo"].lower()}',
-                   lambda t, p=project, s=i % 2: card_svg(p, repos.get(p["repo"], {}), t, s))
-    write_pair("about", about_svg)
-    write_pair("archive", archive_svg)
-    for i, link in enumerate(LINKS):
-        write_pair(f"link-{link[0]}", lambda t, k=i: link_svg(k, t))
-    write_pair("toolkit", toolkit_svg)
-    write_pair("divider", divider_svg)
-    for key in SECTIONS:
-        write_pair(f"section-{key}", lambda t, k=key: section_svg(k, t))
-    posts = medium_posts()
-    if posts:
-        update_writing(posts)
-    print("profile assets written")
+    d = github_data()
+    outputs = {
+        "hero": hero_svg(d), "familiar": familiar_svg(), "mage-way": way_svg(d), "spell-stack": spells_svg(),
+        "mage-id": id_svg(d), "connect": connect_svg(), "orb": orb_svg(), "sigil": sigil_svg(),
+    }
+    for name, svg in outputs.items():
+        (ASSETS / f"{name}.svg").write_text(svg, encoding="utf-8", newline="\n")
+    update_readme(d)
+    print("profile assets written:", ", ".join(outputs))
 
 
 if __name__ == "__main__":
