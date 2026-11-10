@@ -1,38 +1,19 @@
-# Berke Arda Türk
+<a href="https://berkeardaturk.com"><img src="./assets/header.svg?v=8" alt="Berke Arda Türk. Computer Science student specialising in AI and Data Science. I take real datasets to honest answers: baseline first, no leakage." width="100%"></a>
 
-Computer Science student at Vizja University, specialising in Artificial Intelligence and Data Science.
+<p><a href="https://berkeardaturk.com"><img src="./assets/link-website.svg?v=8" alt="Website" width="20%"></a><a href="https://www.linkedin.com/in/berke-arda-turk/"><img src="./assets/link-linkedin.svg?v=8" alt="LinkedIn" width="20%"></a><a href="https://www.kaggle.com/berketurk"><img src="./assets/link-kaggle.svg?v=8" alt="Kaggle" width="20%"></a><a href="https://medium.com/@berkeardaturk"><img src="./assets/link-medium.svg?v=8" alt="Medium" width="20%"></a><a href="mailto:turkberkearda@gmail.com"><img src="./assets/link-email.svg?v=8" alt="Email" width="20%"></a></p>
 
-[Website](https://berkeardaturk.com) · [LinkedIn](https://www.linkedin.com/in/berke-arda-turk/) · [Kaggle](https://www.kaggle.com/berketurk) · [Medium](https://medium.com/@berkeardaturk) · [Email](mailto:turkberkearda@gmail.com)
+<img src="./assets/section-about.svg?v=8" alt="About" width="100%">
 
-## About
+<img src="./assets/about.svg?v=8" alt="I like taking a real dataset all the way to an honest answer: a simple baseline first, validation without leakage, and a clear note on what the model cannot do. The results that hold up become apps and write-ups. Focus: machine learning on tabular data, model explainability, and big data with PySpark. Currently building: foldsafe, an open-source checker for data leakage in ML code. Open to: machine learning and data roles, internships and collaborations." width="100%">
 
-I like taking a real dataset all the way to an honest answer: a simple baseline first, validation without leakage, and a clear note on what the model cannot do. The results that hold up become apps and write-ups.
+<img src="./assets/section-projects.svg?v=8" alt="Projects" width="100%">
 
-- **Focus:** machine learning on tabular data, model explainability, and big data with PySpark
-- **Currently building:** [foldsafe](https://github.com/BerkeArdaTurk21/foldsafe), an open-source checker for data leakage in ML code
-- **Open to:** machine learning and data roles, internships and collaborations
+<p><a href="https://github.com/BerkeArdaTurk21/foldsafe"><img src="./assets/card-foldsafe.svg?v=8" alt="foldsafe: Static analyzer and agent skill that catch data leakage in ML code. Pre-alpha · 4 rules working." width="50%"></a><a href="https://github.com/BerkeArdaTurk21/kaggle-titanic"><img src="./assets/card-kaggle-titanic.svg?v=8" alt="Kaggle Titanic: End-to-end tabular ML with leak-free pipelines and nested cross-validation. Kaggle 0.794 · CV 0.841." width="50%"></a><a href="https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard"><img src="./assets/card-customer-churn-shap-dashboard.svg?v=8" alt="Churn SHAP Dashboard: Churn model with a SHAP explanation for every prediction, served as an app. ROC-AUC 0.84 · recall 79%." width="50%"></a><a href="https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor"><img src="./assets/card-stock-sentiment-predictor.svg?v=8" alt="Stock Sentiment Predictor: Three-class sentiment on 4,846 financial news headlines. 74.5% accuracy · baseline 59.4%." width="50%"></a><a href="https://github.com/BerkeArdaTurk21/EconoScope"><img src="./assets/card-econoscope.svg?v=8" alt="EconoScope: Exploratory analysis of inflation in 212 countries, 1970-2022. 5 inflation measures compared." width="50%"></a><a href="https://github.com/BerkeArdaTurk21/Python-RoadMap"><img src="./assets/card-python-roadmap.svg?v=8" alt="Python RoadMap: Eight weeks of daily Python lessons with quizzes and exercises. 63 lessons · 4 projects." width="50%"></a></p>
 
-## Projects
+<img src="./assets/section-skills.svg?v=8" alt="Skills" width="100%">
 
-| Project | Description | Result | Stack |
-|---|---|---|---|
-| [foldsafe](https://github.com/BerkeArdaTurk21/foldsafe) | Static analyzer and agent skill that catch data leakage in ML code | Pre-alpha, 4 rules working | Python |
-| [Kaggle Titanic](https://github.com/BerkeArdaTurk21/kaggle-titanic) | End-to-end tabular ML with leak-free pipelines and nested cross-validation | Kaggle 0.794, CV 0.841 | scikit-learn, XGBoost |
-| [Churn SHAP Dashboard](https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard) | Churn model with a SHAP explanation for every prediction, served as an app | ROC-AUC 0.84, recall 79% | XGBoost, SHAP, Streamlit |
-| [Stock Sentiment Predictor](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Three-class sentiment on 4,846 financial news headlines | 74.5% accuracy (baseline 59.4%) | scikit-learn, TF-IDF |
-| [EconoScope](https://github.com/BerkeArdaTurk21/EconoScope) | Exploratory analysis of inflation in 212 countries, 1970-2022 | 5 inflation measures compared | pandas, Matplotlib |
-| [Python RoadMap](https://github.com/BerkeArdaTurk21/Python-RoadMap) | Eight weeks of daily Python lessons with quizzes and exercises | 63 lessons, 4 projects | Python |
+<img src="./assets/skills.svg?v=8" alt="Languages: Python, SQL, TypeScript, Java. Machine learning: scikit-learn, XGBoost, SHAP, PyTorch (learning). Data and analysis: pandas, NumPy, Matplotlib, Seaborn, Jupyter. Big data and databases: PySpark, MySQL, SQLite. Apps and engineering: Streamlit, React, Tailwind, Git" width="100%">
 
-## Skills
+<img src="./assets/section-writing.svg?v=8" alt="Writing" width="100%">
 
-- **Languages:** Python, SQL, TypeScript, Java
-- **Machine learning:** scikit-learn, XGBoost, SHAP, PyTorch (learning)
-- **Data and analysis:** pandas, NumPy, Matplotlib, Seaborn, Jupyter
-- **Big data and databases:** PySpark, MySQL, SQLite
-- **Apps and engineering:** Streamlit, React, Tailwind, Git
-
-## Writing
-
-- [What My First Kaggle Project Taught Me About Data Leakage and Simple Models](https://medium.com/@berkeardaturk/what-my-first-kaggle-project-taught-me-about-data-leakage-and-simple-models-c7c2b174e6f2) (Oct 2026)
-- [I Tried to Predict Customer Churn With ML: Here's What Actually Worked](https://medium.com/@berkeardaturk/i-tried-to-predict-customer-churn-with-ml-heres-what-actually-worked-50a1c38e2185) (May 2026)
-- [I Analysed 50 Years of Global Inflation Data: Here's What I Found](https://medium.com/@berkeardaturk/i-analysed-50-years-of-global-inflation-data-heres-what-i-found-7a511fd15c73) (May 2026)
+<p><a href="https://medium.com/@berkeardaturk/what-my-first-kaggle-project-taught-me-about-data-leakage-and-simple-models-c7c2b174e6f2"><img src="./assets/post-1.svg?v=8" alt="What My First Kaggle Project Taught Me About Data Leakage and Simple Models, Oct 2026" width="100%"></a><a href="https://medium.com/@berkeardaturk/i-tried-to-predict-customer-churn-with-ml-heres-what-actually-worked-50a1c38e2185"><img src="./assets/post-2.svg?v=8" alt="I Tried to Predict Customer Churn With ML: Here&#x27;s What Actually Worked, May 2026" width="100%"></a><a href="https://medium.com/@berkeardaturk/i-analysed-50-years-of-global-inflation-data-heres-what-i-found-7a511fd15c73"><img src="./assets/post-3.svg?v=8" alt="I Analysed 50 Years of Global Inflation Data: Here&#x27;s What I Found, May 2026" width="100%"></a></p>
