@@ -28,7 +28,7 @@ from pathlib import Path
 USER = "BerkeArdaTurk21"
 MEDIUM_FEED = "https://medium.com/feed/@berkeardaturk"
 # GitHub caches README images; bump this (and the ?v= numbers in README.md) after a design change.
-CACHE_VERSION = 3
+CACHE_VERSION = 4
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
 # Artwork is embedded into the SVGs as base64, because GitHub shows README SVGs as images
@@ -134,6 +134,16 @@ QUEST_LOG = [
     ("Oct 2026", "First Kaggle quest: Titanic, score 0.794"),
     ("May 2026", "Explained churn predictions with SHAP"),
     ("May 2026", "Read 50 years of inflation in 212 countries"),
+]
+
+ABOUT_TEXT = ("I'm a Computer Science undergraduate at Vizja University, specialising in AI and Data Science. "
+              "I like taking a real dataset all the way to an honest answer: a simple baseline first, validation "
+              "without leakage, and a clear note on what the model cannot do. The results that hold up become "
+              "apps and write-ups.")
+ABOUT_POINTS = [
+    ("kenaz", "Focused on", "machine learning on tabular data, model explainability and big data with PySpark."),
+    ("berkano", "Writing", "about my data projects on Medium."),
+    ("gebo", "Open to", "machine learning and data roles."),
 ]
 
 GUILD_FIELDS = [
@@ -591,6 +601,29 @@ def section_svg(key, t):
     ])
 
 
+def about_svg(t):
+    """About text on the same night sky panel as the other sections (markdown text cannot have a background)."""
+    lines = wrap(ABOUT_TEXT, 118)
+    w = 1000
+    top = 44
+    points_top = top + len(lines) * 25 + 22
+    h = points_top + len(ABOUT_POINTS) * 34 + 18
+    label = ABOUT_TEXT + " " + " ".join(f"{a} {b}" for _, a, b in ABOUT_POINTS)
+    gradient, panel = sky_panel(t, w, h, 77, 45, cx_ratio=.1, text_box=(20, 20, 980, h - 20))
+    parts = [svg_open(w, h, label), ANIMATIONS, defs(t, gradient), panel]
+    for i, line in enumerate(lines):
+        parts.append(text(36, top + i * 25, line, 15.5, t["ink"]))
+    parts.append(f'<line x1="36" y1="{points_top - 14}" x2="{w - 36}" y2="{points_top - 14}" '
+                 f'stroke="{t["line"]}" stroke-dasharray="2 5"/>')
+    for i, (sigil, label_text, rest) in enumerate(ABOUT_POINTS):
+        y = points_top + i * 34
+        parts.append(rune(sigil, 38, y - 2, 18, t["signal"], 1.7, extra=glow_attr(t)))
+        parts.append(text(64, y + 13, label_text, 15.5, t["signal"], SERIF, 600))
+        parts.append(text(64 + len(label_text) * 7.6 + 8, y + 13, rest, 15, t["muted"]))
+    parts.append("</svg>")
+    return "".join(parts)
+
+
 def chronicle_svg(post, index, t):
     """One Medium post as a themed card; the README wraps it in a link."""
     w, h = 1000, 76
@@ -606,12 +639,20 @@ def chronicle_svg(post, index, t):
     ])
 
 
-def card_svg(project, repo, t):
-    w, h = 420, 180
-    gradient, panel = sky_panel(t, w, h, len(project["repo"]), 14)
-    parts = [svg_open(w, h, f'{project["title"]}: {project["metric"]}. {project["desc"]}'),
+def card_svg(project, repo, t, side=0):
+    """Project card in a 500-wide half of the 1000-wide grid.
+
+    Two cards side by side at 50% each fill exactly the width of the other sections; the 8px
+    gutter lives inside the SVGs (right edge of left cards, left edge of right cards).
+    """
+    outer_w, outer_h, gutter = 500, 188, 8
+    w, h = outer_w - gutter, 180
+    dx = 0 if side == 0 else gutter
+    gradient, panel = sky_panel(t, w, h, len(project["repo"]), 16)
+    parts = [svg_open(outer_w, outer_h, f'{project["title"]}: {project["metric"]}. {project["desc"]}'),
              ANIMATIONS,
              defs(t, gradient),
+             f'<g transform="translate({dx} 0)">',
              panel,
              rune(project["rune"], 22, 19, 18, t["signal"], 1.8, extra=glow_attr(t)),
              text(44, 35, project["title"], 17, t["ink"], SERIF, 600)]
@@ -619,7 +660,7 @@ def card_svg(project, repo, t):
     star_x = w - 22 - len(str(stars)) * 7.5 - 19
     parts.append(f'<path d="{STAR_PATH}" transform="translate({star_x:.1f} 23) scale(.9)" fill="{t["muted"]}"/>')
     parts.append(text(w - 22, 35, stars, 12.5, t["muted"], MONO, anchor="end"))
-    for i, line in enumerate(wrap(project["desc"], 56)[:3]):
+    for i, line in enumerate(wrap(project["desc"], 66)[:3]):
         parts.append(text(22, 64 + i * 19, line, 12.5, t["muted"]))
     parts.append(star4(27, 132, 5, t["signal"]))
     parts.append(text(38, 136, project["metric"], 12.5, t["signal"], MONO, 600))
@@ -631,7 +672,7 @@ def card_svg(project, repo, t):
         svg, width = chip(x, 147, tag, t, 10)
         parts.append(svg)
         x += width + 6
-    parts.append("</svg>")
+    parts.append("</g></svg>")
     return "".join(parts)
 
 
@@ -697,8 +738,10 @@ def main():
     write_pair("path", path_svg)
     write_pair("guild", guild_svg)
     write_pair("raven", raven_svg)
-    for project in FEATURED:
-        write_pair(f'card-{project["repo"].lower()}', lambda t, p=project: card_svg(p, repos.get(p["repo"], {}), t))
+    for i, project in enumerate(FEATURED):
+        write_pair(f'card-{project["repo"].lower()}',
+                   lambda t, p=project, s=i % 2: card_svg(p, repos.get(p["repo"], {}), t, s))
+    write_pair("about", about_svg)
     write_pair("toolkit", toolkit_svg)
     write_pair("divider", divider_svg)
     for key in SECTIONS:
