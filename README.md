@@ -16,7 +16,7 @@ I like taking a real dataset all the way to an honest answer: a simple baseline 
 
 | Project | Description | Result | Stack |
 |---|---|---|---|
-| [foldsafe](https://github.com/BerkeArdaTurk21/foldsafe) | Static analyzer and agent skill that catch data leakage in ML code | Pre-alpha, 4 rules working | Python |
+| [foldsafe](https://github.com/BerkeArdaTurk21/foldsafe) | Static analyzer and agent skill that catch data leakage in ML code | Pre-alpha: 4 rules, runs on scripts and notebooks | Python |
 | [Kaggle Titanic](https://github.com/BerkeArdaTurk21/kaggle-titanic) | End-to-end tabular ML with leak-free pipelines and nested cross-validation | Kaggle 0.794, CV 0.841 | scikit-learn, XGBoost |
 | [Churn SHAP Dashboard](https://github.com/BerkeArdaTurk21/customer-churn-shap-dashboard) | Churn model with a SHAP explanation for every prediction, served as an app | ROC-AUC 0.84, recall 79% | XGBoost, SHAP, Streamlit |
 | [Stock Sentiment Predictor](https://github.com/BerkeArdaTurk21/Stock-Sentiment-Predictor) | Three-class sentiment on 4,846 financial news headlines | 74.5% accuracy (baseline 59.4%) | scikit-learn, TF-IDF |
