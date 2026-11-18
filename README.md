@@ -25,9 +25,9 @@ I like taking a real dataset all the way to an honest answer: a simple baseline 
 
 ## Skills
 
-- **Languages:** Python, SQL, TypeScript, Java
+- **Languages:** Python, SQL, R (learning), TypeScript, Java
 - **Machine learning:** scikit-learn, XGBoost, SHAP, PyTorch (learning)
-- **Data and analysis:** pandas, NumPy, Matplotlib, Seaborn, Jupyter
+- **Data and analysis:** pandas, NumPy, Matplotlib, Seaborn, Jupyter, RStudio
 - **Big data and databases:** PySpark, MySQL, SQLite
 - **Apps and engineering:** Streamlit, React, Tailwind, Git
 
